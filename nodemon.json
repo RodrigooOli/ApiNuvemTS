@@ -1,0 +1,5 @@
+{
+    "execMap": {
+        "ts": "cls && sucrase-node src/index.ts"
+    }
+}
