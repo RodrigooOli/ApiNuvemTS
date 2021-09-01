@@ -1,4 +1,5 @@
 import { Request, Response } from "express-serve-static-core";
+import { permissoesUsuario } from "../../../../common/utils";
 import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from "../../../../utils/pg_sql";
 import { IUser } from "./interfaces";
@@ -28,9 +29,9 @@ export default new class extends RouterFn {
 
     async fn(req: Request, res: Response): Promise<any> {
         const exSql = pgConnection(base);
-        let user: IUser; 
+        let user: IUser;
 
-        const rUser = await exSql(`select * from tb_operadores where upper(login) = upper('${req.body.user}') and senha = md5('${req.body.passw}') and codigo = ${req.body.codigo}`)
+        const rUser = await exSql(`select * from tb_operadores where upper(login) = upper('${req.body.user}') and senha = md5('${req.body.passw}') and cod_empresa = ${req.body.codigo}`)
 
         if (rUser.length === 0) {
             res.json({
@@ -40,15 +41,6 @@ export default new class extends RouterFn {
             return
         }
 
-        function permissoes() {
-            try {
-                const p = JSON.parse(rUser[0].permissao)
-                return p;
-            } catch (e) {
-                return []
-            }
-        }
-
         user = {
             id_operador: rUser[0].id,
             ativo: rUser[0].ativo ? 1 : 0,
@@ -56,13 +48,30 @@ export default new class extends RouterFn {
             cartao: rUser[0].cartao,
             nivel: rUser[0].nivel,
             cod_atd: rUser[0].cod_atd,
-            permissao: permissoes()
+            v_dashboard: false,
+            permissao: []
         }
+
+        if (!user.ativo) {
+            res.json({
+                ok: false,
+                msg: 'O usuário foi inativado!'
+            })
+            return
+        }
+
+        const permissoes = permissoesUsuario(rUser[0])
+        user.permissao = permissoes.filter(p => p !== 28 || user.nivel === 4)
+        user.v_dashboard = user.nivel === 4 || permissoes.includes(-1)
 
         const rLojas = await exSql(`select tl.* 
         from tb_lojas tl
-        inner join tb_operadores_lojas tol 
-        on tol.id_loja = tl.id 
+        ${user.nivel !== 4
+                ? `inner join tb_operadores_lojas tol 
+                on tol.id_loja = tl.id
+                and tol.id_operador = ${user.id_operador}`
+                : ''
+            }
         where cod_cliente = ${req.body.codigo}`);
 
         if (rLojas.length === 0) {

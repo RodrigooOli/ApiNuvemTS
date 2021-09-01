@@ -14,8 +14,10 @@ const createRoutes = async () => new Promise(async res => {
             const arquivo = list[i];
             const ehPasta = !/(.ts)$/g.test(arquivo);
 
-            if (ehPasta) await criarRotas(await fs.readdir(dir + `/${arquivo}`), dir + `/${arquivo}`);
-            else {
+            if (ehPasta) {
+                const caminho = dir + `/${arquivo}`;
+                await criarRotas(await fs.readdir(caminho), caminho);
+            } else {
                 const func = await import(dir + `/${arquivo}`);
 
                 if (func.default?.route) {
@@ -25,9 +27,6 @@ const createRoutes = async () => new Promise(async res => {
                             break;
                         case 'POST':
                             router.post(`${func.default?.route}`, func.default?.execute)
-                            break;
-                        default:
-                            router.get(`${func.default?.route}`, func.default?.execute)
                             break;
                     }
                 }

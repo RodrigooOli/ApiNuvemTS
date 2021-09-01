@@ -3,7 +3,8 @@ export interface IUser {
     cod_atd: number
     nome: number
     nivel: number
-    cartao: boolean
+    cartao: number
     ativo: number
+    v_dashboard: boolean
     permissao: number[]
 }

@@ -3,9 +3,7 @@ import { Request, Response } from "express";
 export class RouterFn {
     constructor(public route: string, public method: 'GET' | 'POST') { }
 
-    protected async fn(req: Request, res: Response): Promise<void> {
-
-    }
+    protected async fn(req: Request, res: Response): Promise<void> { }
 
     execute = async (req: Request, res: Response): Promise<void> => {
         try {
