@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { permissoesUsuario } from "../../../../common/utils";
 import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from '../../../../utils/pg_sql';
 
@@ -22,8 +21,6 @@ export default new class extends RouterFn {
             `);
 
             await pgSql(`delete from tb_operadores_lojas where id_operador = ${req.body.id}`)
-
-            console.log(req.body.lojas_id)
 
             await req.body.lojas_id.forEach(async (id: string) => await pgSql(`insert into tb_operadores_lojas (id_loja, id_operador) values ('${id}', ${req.body.id})`));
 

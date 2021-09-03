@@ -1,0 +1,11 @@
+import { Request, Response } from "express";
+import { RouterFn } from "../../../models/router_model";
+import { db } from "../../../common/ex_sql_relatorio";
+
+export default new class extends RouterFn {
+    constructor() { super('/', 'POST') }
+
+    async fn(req: Request, res: Response) {
+
+    }
+}

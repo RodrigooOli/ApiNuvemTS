@@ -16,14 +16,16 @@ export default new class extends RouterFn {
                 permissao,
                 login,
                 cod_empresa,
-                senha
+                senha,
+                id_franquia
             ) values (
                 '${req.body.nome}',
                 ${req.body.nivel},
                 '[${req.body.permissao.toString()}]',
                 '${req.body.login}',
                 ${req.body.codEmp},
-                '${req.body.senha}'
+                '${req.body.senha}',
+                '${req.body.idFranquia}'
             ) returning *`);
 
             await req.body.lojas_id.forEach(async (id: string) => await pgSql(`insert into tb_operadores_lojas (id_loja, id_operador) values ('${id}', ${rows[0].id})`));

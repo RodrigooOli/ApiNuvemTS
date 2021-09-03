@@ -30,6 +30,7 @@ export default new class extends RouterFn {
     async fn(req: Request, res: Response): Promise<any> {
         const exSql = pgConnection(base);
         let user: IUser;
+        let rLojas;
 
         const rUser = await exSql(`select * from tb_operadores where upper(login) = upper('${req.body.user}') and senha = md5('${req.body.passw}') and cod_empresa = ${req.body.codigo}`)
 
@@ -43,6 +44,7 @@ export default new class extends RouterFn {
 
         user = {
             id_operador: rUser[0].id,
+            id_franquia: rUser[0].id_franquia,
             ativo: rUser[0].ativo ? 1 : 0,
             nome: rUser[0].nome,
             cartao: rUser[0].cartao,
@@ -64,29 +66,47 @@ export default new class extends RouterFn {
         user.permissao = permissoes.filter(p => p !== 28 || user.nivel === 4)
         user.v_dashboard = user.nivel === 4 || permissoes.includes(-1)
 
-        const rLojas = await exSql(`select tl.* 
-        from tb_lojas tl
-        ${user.nivel !== 4
-                ? `inner join tb_operadores_lojas tol 
-                on tol.id_loja = tl.id
-                and tol.id_operador = ${user.id_operador}`
-                : ''
-            }
-        where cod_cliente = ${req.body.codigo}`);
+        if (user.id_franquia) {
+            rLojas = await exSql(`select tl.* 
+            from tb_lojas tl 
+            where tl.id_franquia = ${user.id_franquia}`);
 
-        if (rLojas.length === 0) {
-            res.json({
-                ok: false,
-                msg: `O usuário não tem permissão para acessar nenhuma loja com o código ${req.body.codigo}`
-            })
-            return
+            if (rLojas.length === 0) {
+                res.json({
+                    ok: false,
+                    msg: `O usuário não tem permissão para acessar nenhuma loja`
+                })
+                return
+            }
+        } else {
+            rLojas = await exSql(`select tl.* 
+            from tb_lojas tl
+            ${user.nivel !== 4
+                    ? `inner join tb_operadores_lojas tol 
+                    on tol.id_loja = tl.id
+                    and tol.id_operador = ${user.id_operador}`
+                    : ''
+                }
+            where cod_cliente = ${req.body.codigo}`);
+
+            if (rLojas.length === 0) {
+                res.json({
+                    ok: false,
+                    msg: `O usuário não tem permissão para acessar nenhuma loja com o código ${req.body.codigo}`
+                })
+                return
+            }
         }
+
+
+        const rRepresentante = await exSql(`select id, nome, wpp_suporte from tb_representantes where id = ${rLojas[0].id_representante}`)
 
         res.json({
             ok: true,
             body: {
                 user: user,
-                lojas: rLojas
+                lojas: rLojas,
+                representante: rRepresentante,
             }
         })
     }

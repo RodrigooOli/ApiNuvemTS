@@ -17,10 +17,6 @@ export default new class extends RouterFn {
         where cod_empresa = ${req.body.cod} and (top.id <> ${req.body.id} and top.nivel <= ${req.body.nivel})
         group by top.id `);
 
-        console.log(rows)
-
-        // const rows = await pgSql(`select * from tb_operadores where cod_empresa = ${req.body.cod} and (id <> ${req.body.id} and nivel <= ${req.body.nivel})`);
-
         const gestores = rows.map(r => {
             const permissoes = permissoesUsuario(r);
             delete r.senha
