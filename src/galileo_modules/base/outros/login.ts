@@ -8,7 +8,7 @@ export default new class extends RouterFn {
     constructor() { super('/base/login', 'POST') }
 
     async fn(req: Request, res: Response) {
-        const rows = await pgSql(`select id, nome, cep, rua, bairro, cidade, estado, celular, data_cadastro, cpf_cnpj, interno
+        const rows = await pgSql(`select id, nome, cep, rua, bairro, cidade, estado, celular, data_cadastro, cpf_cnpj, supervisor
         from tb_representantes where upper(nome) = upper('${req.body.user}') and senha = md5('${req.body.passw}')`);
 
         if (rows.length === 0) {

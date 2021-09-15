@@ -7,11 +7,14 @@ export default new class extends RouterFn {
     constructor() { super('/base/representantes', 'GET') }
 
     async fn(req: Request, res: Response) {
-        const rows = await pgSql(`select id, nome, cep, rua, bairro, cidade, estado, celular, data_cadastro, cpf_cnpj, interno from tb_representantes`);
+        const rows = await pgSql(`select * from tb_representantes`);
 
         res.json({
             ok: true,
-            body: rows
+            body: rows.map(r => {
+                delete r.senha;
+                return r;
+            })
         })
     }
 }
