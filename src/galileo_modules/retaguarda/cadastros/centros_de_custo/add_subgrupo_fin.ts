@@ -4,21 +4,13 @@ import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from '../../../../utils/pg_sql'
 
 export default new class extends RouterFn {
-    constructor() { super('/retaguarda/add_grupo_fin', 'POST') }
+    constructor() { super('/retaguarda/add_subgrupo_fin', 'POST') }
 
     async fn(req: Request, res: Response) {
         if (!req.body.idLoja) {
             res.json({
                 ok: false,
                 msg: 'Nenhuma loja selecionada'
-            })
-            return;
-        }
-
-        if (!['CRÉDITO', 'DÉBITO'].includes(req.body.tipo)) {
-            res.json({
-                ok: false,
-                msg: 'Tipo da categoria é inválido'
             })
             return;
         }
@@ -33,7 +25,11 @@ export default new class extends RouterFn {
 
         const pgSql = pgConnection(options)
 
-        const rows = await pgSql(`insert into tb_grupofin (grupo, ativo, tipo) values ('${req.body.nome}', ${req.body.ativo ? 1 : 0}, upper('${req.body.tipo}')) returning *`)
+        const rows = await pgSql(`insert into tb_subgrupofin (subgrupo, idgrupo, ativo) values (
+            upper('${req.body.nome}'), 
+            ${req.body.idGrupo},
+            ${req.body.ativo ? 1 : 0}
+        ) returning *`)
 
         res.json({
             ok: true,

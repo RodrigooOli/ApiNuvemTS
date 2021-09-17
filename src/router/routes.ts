@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import fs from 'fs'
 import cors from 'cors';
-
+import { RouterFn } from '../models/router_model';
 
 const router = Router()
 
@@ -21,7 +21,7 @@ const createRoutes = async () => new Promise(async res => {
             } else {
                 const func = await import(dir + `/${arquivo}`);
 
-                if (func.default?.route) {
+                if (func.default instanceof RouterFn) {
                     switch (func.default?.method) {
                         case 'GET':
                             router.get(`${func.default?.route}`, func.default?.execute)

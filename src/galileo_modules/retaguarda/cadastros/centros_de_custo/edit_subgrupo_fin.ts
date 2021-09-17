@@ -4,7 +4,7 @@ import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from '../../../../utils/pg_sql'
 
 export default new class extends RouterFn {
-    constructor() { super('/retaguarda/add_grupo_fin', 'POST') }
+    constructor() { super('/retaguarda/edit_subgrupo_fin', 'POST') }
 
     async fn(req: Request, res: Response) {
         if (!req.body.idLoja) {
@@ -15,13 +15,14 @@ export default new class extends RouterFn {
             return;
         }
 
-        if (!['CRÉDITO', 'DÉBITO'].includes(req.body.tipo)) {
+        if (!req.body.id) {
             res.json({
                 ok: false,
-                msg: 'Tipo da categoria é inválido'
+                msg: 'Centro de custo não foi identificado'
             })
             return;
         }
+
 
         const options: ClientConfig = {
             user: 'postgres',
@@ -33,11 +34,15 @@ export default new class extends RouterFn {
 
         const pgSql = pgConnection(options)
 
-        const rows = await pgSql(`insert into tb_grupofin (grupo, ativo, tipo) values ('${req.body.nome}', ${req.body.ativo ? 1 : 0}, upper('${req.body.tipo}')) returning *`)
+        await pgSql(`update tb_subgrupofin set
+            idgrupo = ${req.body.idGrupo},
+            ativo = ${req.body.ativo ? 1 : 0},
+            subgrupo = '${req.body.nome}'
+            where idsubgrupo = ${req.body.id}
+        `)
 
         res.json({
-            ok: true,
-            body: rows[0]
+            ok: true
         })
     }
 }
