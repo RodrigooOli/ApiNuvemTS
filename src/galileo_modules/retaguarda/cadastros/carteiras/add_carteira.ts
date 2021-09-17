@@ -4,7 +4,7 @@ import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from '../../../../utils/pg_sql'
 
 export default new class extends RouterFn {
-    constructor() { super('/retaguarda/load_grupo_fin', 'POST') }
+    constructor() { super('/retaguarda/add_carteira', 'POST') }
 
     async fn(req: Request, res: Response) {
         if (!req.body.idLoja) {
@@ -25,11 +25,31 @@ export default new class extends RouterFn {
 
         const pgSql = pgConnection(options)
 
-        const rCategorias = await pgSql(`select * from tb_grupofin order by grupo`)
+        const rows = await pgSql(`insert into tb_carteira (
+            nome,
+            agencia,
+            conta,
+            digito,
+            ativo,
+            id_banco,
+            carteira,
+            digagencia,
+            convenio
+        ) values (
+            upper('${req.body.nome}'), 
+            '${req.body.agencia}',
+            '${req.body.conta}',
+            '${req.body.digito}',
+            ${req.body.ativo ? 1 : 0},
+            ${req.body.id_banco},
+            '${req.body.carteira}',
+            '${req.body.digagencia}',
+            '${req.body.convenio}'
+        ) returning *`)
 
         res.json({
             ok: true,
-            body: rCategorias
+            body: rows[0]
         })
     }
 }
