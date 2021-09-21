@@ -1,0 +1,15 @@
+
+
+
+[21/09/2021 09:33:36] - TypeError: Cannot read property 'where' of undefined
+origem: API NUVEM
+origem_d: /base/lojas/:idRepresentante
+msg: TypeError: Cannot read property 'where' of undefined,
+data_erro: Tue Sep 21 2021 09:33:36 GMT-0300 (Horário Padrão de Brasília)
+
+
+[21/09/2021 09:33:36] - TypeError: Cannot read property 'where' of undefined
+origem: API NUVEM
+origem_d: /base/codigos_empresa/:id
+msg: TypeError: Cannot read property 'where' of undefined,
+data_erro: Tue Sep 21 2021 09:33:36 GMT-0300 (Horário Padrão de Brasília)

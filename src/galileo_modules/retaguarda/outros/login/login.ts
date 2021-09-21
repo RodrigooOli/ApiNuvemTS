@@ -35,7 +35,6 @@ export default new class extends RouterFn {
 
 
         const rUser = await exSql(`select * from tb_operadores where upper(login) = upper('${req.body.user}') and senha = md5('${req.body.passw}') and cod_empresa = ${codigoEmpresa}`)
-        console.log(rUser)
 
         if (rUser.length === 0) {
             res.json({
@@ -50,6 +49,7 @@ export default new class extends RouterFn {
             id_franquia: rUser[0].id_franquia,
             ativo: rUser[0].ativo ? 1 : 0,
             nome: rUser[0].nome,
+            login: rUser[0].login,
             cartao: rUser[0].cartao,
             nivel: rUser[0].nivel,
             cod_atd: rUser[0].cod_atd,
@@ -60,7 +60,7 @@ export default new class extends RouterFn {
         if (!user.ativo) {
             res.json({
                 ok: false,
-                msg: 'O usuário foi inativado!'
+                msg: 'O usuário foi desativado!'
             })
             return
         }

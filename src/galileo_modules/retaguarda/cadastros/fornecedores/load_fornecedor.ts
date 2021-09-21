@@ -24,8 +24,9 @@ export default new class extends RouterFn {
         }
 
         const pgSql = pgConnection(options)
+        const where = req.body.soAtivos ? ' where ativo = 1' : ''
 
-        const rows = await pgSql(`select * from tb_fornecedor`)
+        const rows = await pgSql(`select * from tb_fornecedor ${where}`)
 
         res.json({
             ok: true,

@@ -9,53 +9,62 @@ export default new class extends RouterFn {
     constructor() { super('/base/assinar_sat', 'POST') }
 
     async fn(req: Request, res: Response) {
-        if (!!req.body.cnpj) {
-            console.log(req.body.cnpj)
-            if (!cnpj.isValid(req.body.cnpj)) {
-                res.json({
-                    ok: false,
-                    msg: 'CNPJ INFORMADO NÃO É UM DOCUMENTO VÁLIDO'
-                })
-                return
+        try {
+            if (!!req.body.cnpj) {
+                console.log(req.body.cnpj)
+                if (!cnpj.isValid(req.body.cnpj)) {
+                    res.json({
+                        ok: false,
+                        msg: 'CNPJ inválido'
+                    })
+                    return
+                }
+
+                await pgSql(`update tb_lojas set assinar_sat = true, cpf_cnpj = ${req.body.cnpj} where id = 'dump'`);
+            } else {
+                await pgSql(`update tb_lojas set assinar_sat = true where id = '${req.body.id}'`);
             }
 
-            await pgSql(`update tb_lojas set assinar_sat = true, cpf_cnpj = ${req.body.cnpj} where id = 'dump'`);
-        } else {
-            await pgSql(`update tb_lojas set assinar_sat = true where id = '${req.body.id}'`);
-        }
-
-        const Client = require('pg').Client
-        const httpClient = new Client({
-            user: 'postgres',
-            password: 'avfarila@2021!',
-            host: '191.252.220.143',
-            database: 'base',
-            port: 5432
-        })
+            const Client = require('pg').Client
+            const httpClient = new Client({
+                user: 'postgres',
+                password: 'avfarila@2021!',
+                host: '191.252.220.143',
+                database: 'base',
+                port: 5432
+            })
 
 
-        httpClient.connect(function (err, client) {
-            client.query("LISTEN assinatura");
+            httpClient.connect(function (err, client) {
+                client.query("LISTEN assinatura");
 
-            const timeout = setTimeout(() => {
+                const timeout = setTimeout(() => {
+                    res.json({
+                        ok: false,
+                        msg: 'Não foi possível estabelecer conexão com o servidor!'
+                    })
+                    clearTimeout(timeout)
+                    client.query("UNLISTEN assinatura");
+                    pgSql(`update tb_lojas set assinar_sat = false, cpf_cnpj = '' where id = 'dump'`);
+                }, 10000)
+
+                client.on("notification", (a) => {
+                    res.json({
+                        ok: a.payload.length === 344,
+                        msg: a.payload
+                    })
+                    clearTimeout(timeout)
+                    client.query("UNLISTEN assinatura");
+                    pgSql(`update tb_lojas set assinar_sat = false, cpf_cnpj = '' where id = 'dump'`);
+                });
+            });
+        } catch (e) {
+            if (e.toString() === 'error: duplicate key value violates unique constraint "cnpj_unique"') {
                 res.json({
                     ok: false,
-                    msg: 'Não foi possível estabelecer conexão com o servidor!'
+                    msg: 'Já existe um cliente com esse CNPJ no Galileo Plus, para gerar a chave é necessário ir ao cadastro de lojas do representante responsável'
                 })
-                clearTimeout(timeout)
-                client.query("UNLISTEN assinatura");
-                pgSql(`update tb_lojas set assinar_sat = false, cpf_cnpj = '' where id = 'dump'`);
-            }, 10000)
-
-            client.on("notification", (a) => {
-                res.json({
-                    ok: a.payload.length === 344,
-                    msg: a.payload
-                })
-                clearTimeout(timeout)
-                client.query("UNLISTEN assinatura");
-                pgSql(`update tb_lojas set assinar_sat = false, cpf_cnpj = '' where id = 'dump'`);
-            });
-        });
+            }
+        }
     }
 }

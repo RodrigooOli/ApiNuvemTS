@@ -4,7 +4,7 @@ import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from '../../../../utils/pg_sql'
 
 export default new class extends RouterFn {
-    constructor() { super('/retaguarda/edit_grupo_fin', 'POST') }
+    constructor() { super('/retaguarda/edit_carteira', 'POST') }
 
     async fn(req: Request, res: Response) {
         if (!req.body.idLoja) {
@@ -15,18 +15,10 @@ export default new class extends RouterFn {
             return;
         }
 
-        if (!['C', 'D'].includes(req.body.tipo)) {
-            res.json({
-                ok: false,
-                msg: 'Tipo da categoria é inválido'
-            })
-            return;
-        }
-
         if (!req.body.id) {
             res.json({
                 ok: false,
-                msg: 'Categoria não foi identificada'
+                msg: 'Cateira não foi identificada'
             })
             return;
         }
@@ -42,11 +34,17 @@ export default new class extends RouterFn {
 
         const pgSql = pgConnection(options)
 
-        await pgSql(`update tb_grupofin set
-            grupo = ${!!req.body.nome ? `upper('${req.body.nome}'),` : ''}
-            ativo = ${!!req.body.ativo ? 1 : 0},
-            tipo = '${req.body.tipo}'
-            where idgrupo = ${req.body.id}
+        await pgSql(`update tb_carteira set
+            nome = '${req.body.nome}',
+            agencia = '${req.body.agencia}',
+            conta = '${req.body.conta}',
+            digito = '${req.body.digito}',
+            ativo = ${req.body.ativo ? 1 : 0},
+            id_banco = ${req.body.id_banco},
+            carteira = '${req.body.carteira}',
+            digagencia = '${req.body.digagencia}',
+            convenio = '${req.body.convenio}'
+            where id_carteira = ${req.body.id}
         `)
 
         res.json({

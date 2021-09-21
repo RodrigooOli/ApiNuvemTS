@@ -2,7 +2,8 @@ export interface IUser {
     id_operador: string
     id_franquia: number
     cod_atd: number
-    nome: number
+    nome: string
+    login: string
     nivel: number
     cartao: number
     ativo: number

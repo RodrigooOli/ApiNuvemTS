@@ -1,6 +1,14 @@
 import { Client, ClientConfig } from 'pg';
 
-export const pgConnection = (options?: ClientConfig) => (sql: string): Promise<any[]> => {
+interface pgParams {
+    where: boolean
+}
+
+export const pgConnection = (options?: ClientConfig) => (sql: string, params?: pgParams): Promise<any[]> => {
+    params = params ? params : {
+        where: true
+    }
+
     const clinte = new Client(options || {
         user: 'postgres',
         password: 'avfarila@2021!',
@@ -11,6 +19,11 @@ export const pgConnection = (options?: ClientConfig) => (sql: string): Promise<a
 
     return new Promise(async (resolve, reject) => {
         try {
+            if (params.where && sql.includes('update') && !sql.includes('where')) {
+                reject('TENTATIVA DE UPDATE SEM WHERE')
+                return
+            }
+
             clinte.connect();
             const res = await clinte.query(sql);
             resolve(res.rows)
@@ -19,8 +32,7 @@ export const pgConnection = (options?: ClientConfig) => (sql: string): Promise<a
             console.log(sql)
             console.log('------------------------- SQL ------------------------------')
             reject(e)
-        }
-        finally {
+        } finally {
             clinte.end();
         }
     })

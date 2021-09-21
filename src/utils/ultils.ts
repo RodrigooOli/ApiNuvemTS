@@ -90,3 +90,9 @@ export function parseReal(val) {
         minimumFractionDigits: 2,
     })
 }
+
+
+export function addMeses(d: any, qtd: number) {
+    const data = new Date(d)
+    return new Date(data.setMonth(data.getMonth() + qtd))
+}
