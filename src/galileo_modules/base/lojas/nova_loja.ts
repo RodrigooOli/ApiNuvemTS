@@ -18,8 +18,6 @@ export default new class extends RouterFn {
                 return;
             }
 
-            console.log('PASSOU')
-
             const rows = await pgSql(`insert into tb_lojas(
                 cod_cliente,
                 nome,
@@ -33,8 +31,8 @@ export default new class extends RouterFn {
                 '${req.body.nome}',
                 ${req.body.plano},
                 ${req.body.ativo},
-                ${!!req.body.cpfCnpj ? `${req.body.cpfCnpj}` : 'NULL'},
-                0,
+                ${!!req.body.cpfCnpj ? `'${req.body.cpfCnpj}'` : 'NULL'},
+                ${req.body.franquia},
                 ${req.body.idRepresentante}
             ) returning *`);
 
@@ -42,7 +40,10 @@ export default new class extends RouterFn {
 
             res.json({
                 ok: true,
-                body: rows[0]
+                body: {
+                    ...rows[0],
+                    nome_franquia: req.body.nomeFranquia
+                }
             })
         } catch (e) {
             if (e.toString() === 'error: duplicate key value violates unique constraint "cnpj_unique"') {
