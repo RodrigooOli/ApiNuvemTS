@@ -9,6 +9,8 @@ export default new class extends RouterFn {
     constructor() { super('/base/assinar_sat', 'POST') }
 
     async fn(req: Request, res: Response) {
+        var id = '0';
+
         try {
             if (!!req.body.cnpj) {
                 console.log(req.body.cnpj)
@@ -20,7 +22,8 @@ export default new class extends RouterFn {
                     return
                 }
 
-                await pgSql(`update tb_lojas set assinar_sat = true, cpf_cnpj = ${req.body.cnpj} where id = 'dump'`);
+                const rows = await pgSql(`insert into tb_lojas (assinar_sat, cpf_cnpj, id_representante, nome) values (true, '${req.body.cnpj}', 15, 'Gerando chave SAT') returning id`);
+                id = rows[0]['id']
             } else {
                 await pgSql(`update tb_lojas set assinar_sat = true where id = '${req.body.id}'`);
             }
@@ -45,7 +48,9 @@ export default new class extends RouterFn {
                     })
                     clearTimeout(timeout)
                     client.query("UNLISTEN assinatura");
-                    pgSql(`update tb_lojas set assinar_sat = false, cpf_cnpj = '' where id = 'dump'`);
+                    if (id !== '0') {
+                        pgSql(`delete from tb_lojas where id = '${id}'`);
+                    }
                 }, 10000)
 
                 client.on("notification", (a) => {
@@ -55,7 +60,9 @@ export default new class extends RouterFn {
                     })
                     clearTimeout(timeout)
                     client.query("UNLISTEN assinatura");
-                    pgSql(`update tb_lojas set assinar_sat = false, cpf_cnpj = '' where id = 'dump'`);
+                    if (id !== '0') {
+                        pgSql(`delete from tb_lojas where id = '${id}'`);
+                    }
                 });
             });
         } catch (e) {
@@ -64,6 +71,8 @@ export default new class extends RouterFn {
                     ok: false,
                     msg: 'Já existe um cliente com esse CNPJ no Galileo Plus, para gerar a chave é necessário ir ao cadastro de lojas do representante responsável'
                 })
+            } else {
+                throw e;
             }
         }
     }
