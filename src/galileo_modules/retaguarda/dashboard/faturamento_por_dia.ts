@@ -1,6 +1,15 @@
 import { db } from '../../../common/ex_sql_relatorio';
 
 export default async (req) => {
+    const anoIni = new Date(`${req.body.dataIni} `).getFullYear();
+    const anoFim = new Date(`${req.body.dataFim} `).getFullYear();
+    const diferencaEntreDatas = Date.parse(`${req.body.dataFim} `) - Date.parse(`${req.body.dataIni} `)
+    const diferencaEmDias = diferencaEntreDatas / 1000 / 60 / 60 / 24
+    const maisDeUmMes = diferencaEmDias > 31;
+    const maisDeUmAno = anoIni !== anoFim
+
+    const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+
     const rows = await db(`
     select 
     datareg, 
@@ -20,14 +29,44 @@ export default async (req) => {
     where p.data_pagamento >= '${req.body.dataIni}' and p.data_pagamento <= '${req.body.dataFim}' and 
     status=1 group by p.data_pagamento) as s1 group by datareg order by datareg`).execute(req.body.lojasId)
 
-    const faturamentoPorDia = rows.reduce((acc, fat) => {
-        const key = fat.datareg.toLocaleDateString();
+    if (maisDeUmMes) {
+        if (maisDeUmAno) {
+            const faturamentoPorMes = rows.reduce((acc, fat) => {
+                const mes = fat.datareg.getMonth();
+                const ano = fat.datareg.getFullYear();
+                const key = `${meses[mes]} ${ano}`;
 
-        if (!Object.keys(acc).includes(key)) acc[key] = 0;
-        acc[key] += parseFloat(fat.vendas)
+                if (!Object.keys(acc).includes(key)) acc[key] = 0;
+                acc[key] += parseFloat(fat.vendas)
 
-        return acc;
-    }, {})
+                return acc;
+            }, {})
 
-    return faturamentoPorDia
+            return faturamentoPorMes
+        }
+
+        const faturamentoPorMes = rows.reduce((acc, fat) => {
+            const mes = fat.datareg.getMonth();
+            const key = meses[mes]
+
+            if (!Object.keys(acc).includes(key)) acc[key] = 0;
+            acc[key] += parseFloat(fat.vendas)
+
+            return acc;
+        }, {})
+
+        return faturamentoPorMes
+
+    } else {
+        const faturamentoPorDia = rows.reduce((acc, fat) => {
+            const key = fat.datareg.toLocaleDateString();
+
+            if (!Object.keys(acc).includes(key)) acc[key] = 0;
+            acc[key] += parseFloat(fat.vendas)
+
+            return acc;
+        }, {})
+
+        return faturamentoPorDia
+    }
 }

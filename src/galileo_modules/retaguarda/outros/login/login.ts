@@ -69,36 +69,22 @@ export default new class extends RouterFn {
         user.permissao = permissoes.filter(p => p !== 28 || user.nivel === 4)
         user.v_dashboard = user.nivel === 4 || permissoes.includes(-1)
 
-        if (user.id_franquia) {
-            rLojas = await exSql(`select tl.* 
-            from tb_lojas tl 
-            where tl.id_franquia = ${user.id_franquia}`);
-
-            if (rLojas.length === 0) {
-                res.json({
-                    ok: false,
-                    msg: `O usuário não tem permissão para acessar nenhuma loja`
-                })
-                return
-            }
-        } else {
-            rLojas = await exSql(`select tl.* 
+        rLojas = await exSql(`select tl.* 
             from tb_lojas tl
             ${user.nivel !== 4
-                    ? `inner join tb_operadores_lojas tol 
+                ? `inner join tb_operadores_lojas tol 
                     on tol.id_loja = tl.id
                     and tol.id_operador = ${user.id_operador}`
-                    : ''
-                }
+                : ''
+            }
             where cod_cliente = ${req.body.codigo}`);
 
-            if (rLojas.length === 0) {
-                res.json({
-                    ok: false,
-                    msg: `O usuário não tem permissão para acessar nenhuma loja com o código ${req.body.codigo}`
-                })
-                return
-            }
+        if (rLojas.length === 0) {
+            res.json({
+                ok: false,
+                msg: `O usuário não tem permissão para acessar nenhuma loja com o código ${req.body.codigo}`
+            })
+            return
         }
 
 

@@ -20,7 +20,7 @@ export default new class extends RouterFn {
             return;
         }
 
-        const rOperador = await pgSql(`select permissao, nivel from tb_operadores where id = ${idOperador}`)
+        const rOperador = await pgSql(`select permissao, nivel, id_franquia from tb_operadores where id = ${idOperador}`)
 
         function permissoes() {
             try {
@@ -34,6 +34,17 @@ export default new class extends RouterFn {
         const permissao = permissoes().filter((p: number) => p !== 28 || rOperador[0].nivel === 4);
 
         const rMenus = await pgSql('select * from tb_menu')
+
+        if (!!rOperador[0].id_franquia) {
+            rMenus.push({
+                id: -2,
+                id_menu_pai: 24,
+                title: 'Faturamento por loja',
+                rota: 'faturamento-por-loja',
+                icon: 'relatorios.png',
+                ativo: true,
+            })
+        }
 
         const menus: IMenuList = rMenus.filter(menu => !menu.id_menu_pai).map(menu => ({
             id: menu.id,

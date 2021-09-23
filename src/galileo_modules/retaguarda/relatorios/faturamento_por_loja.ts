@@ -1,6 +1,14 @@
 import { db } from "../../../common/ex_sql_relatorio";
+import { pgConnection } from "../../../utils/pg_sql";
 
-export default async (lojasId, filtros) => {
+const pgSql = pgConnection()
+
+export default async (ids, filtros) => {
+    const lojas = await pgSql(`select id, nome from tb_lojas where id_franquia = ${filtros.idFranquia} and id <> 'dump'`)
+    const lojasId = lojas.map(l => l.id)
+
+    console.log(filtros)
+
     const rows = await db(`
         SELECT
         coalesce (sum(entradas), 0) AS faturamento
@@ -19,5 +27,9 @@ export default async (lojasId, filtros) => {
         ) as total
     `).execute(lojasId);
 
-    return rows;
+    return rows.map(r => ({
+        ...r,
+        loja: lojas.find(l => l.id === r.id).nome,
+        faturamento: parseFloat(r.faturamento),
+    }));
 }
