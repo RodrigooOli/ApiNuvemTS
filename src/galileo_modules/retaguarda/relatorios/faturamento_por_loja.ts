@@ -20,9 +20,9 @@ export default async (ids, filtros) => {
             inner join tb_caixa_movimento cx on v.id_caixa_movimento=cx.id_caixa_movimento 
             WHERE cx.data_abertura::date >= '${filtros.dataIni}' AND cx.data_abertura::date <= '${filtros.dataFim}' and v.situacao in ('E','O') and f.ativo ='S' and f.id <> 5
             union all
-            select 
+            select   
             tcr.valor_receb as faturamento
-            from tb_convenio_receb tcr 
+            from tb_convenio_r  eceb tcr 
             WHERE tcr.data_receb::date >= '${filtros.dataIni}' AND tcr.data_receb::date <= '${filtros.dataFim}'
         ) as total
     `).execute(lojasId);

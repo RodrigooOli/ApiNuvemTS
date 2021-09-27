@@ -19,8 +19,12 @@ export const pgConnection = (options?: ClientConfig) => (sql: string, params?: p
 
     return new Promise(async (resolve, reject) => {
         try {
-            if (params.where && sql.includes('update') && !sql.includes('where')) {
-                reject('TENTATIVA DE UPDATE SEM WHERE')
+            if (params.where && (sql.includes('update') || sql.includes('delete')) && !sql.includes('where')) {
+                if (sql.includes('update')) {
+                    reject('Tentativa de UPDATE sem WHERE')
+                } else {
+                    reject('Tentativa de DELETE sem WHERE')
+                }
                 return
             }
 

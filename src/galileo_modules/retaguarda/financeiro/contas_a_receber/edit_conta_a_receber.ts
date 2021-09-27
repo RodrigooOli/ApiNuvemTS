@@ -2,10 +2,9 @@ import { Request, Response } from "express";
 import { ClientConfig } from "pg";
 import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from '../../../../utils/pg_sql'
-import { aspasSimplesDB } from "../../../../utils/ultils";
 
 export default new class extends RouterFn {
-    constructor() { super('/retaguarda/edit_conta_a_pagar', 'POST') }
+    constructor() { super('/retaguarda/edit_conta_a_receber', 'POST') }
 
     async fn(req: Request, res: Response) {
         if (!req.body.idLoja) {
@@ -35,13 +34,13 @@ export default new class extends RouterFn {
 
         const pgSql = pgConnection(options)
 
-        await pgSql(`update tb_pagar set
+        await pgSql(`update tb_receber set
             vencimento = ${req.body.vencimento ? `'${req.body.vencimento}'` : 'vencimento'},
             valor = ${req.body.valor ? req.body.valor : 'valor'},
-            id_fornecedor = ${req.body.fornecedor ? req.body.fornecedor : 'id_fornecedor'},
+            id_cliente = ${req.body.cliente ? req.body.cliente : 'id_cliente'},
             id_grupo = ${req.body.grupo ? req.body.grupo : 'id_grupo'},
             id_subgrupo = ${req.body.subgrupo ? req.body.subgrupo : 'id_subgrupo'},
-            descricao = ${!!req.body.descricao ? `'${aspasSimplesDB(req.body.descricao)}'` : 'descricao'}
+            descricao = ${!!req.body.descricao ? `'${req.body.descricao}'` : 'descricao'}
             where id = ${req.body.id}
         `)
 

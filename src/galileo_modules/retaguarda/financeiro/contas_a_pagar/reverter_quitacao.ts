@@ -2,10 +2,9 @@ import { Request, Response } from "express";
 import { ClientConfig } from "pg";
 import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from '../../../../utils/pg_sql'
-import { aspasSimplesDB } from "../../../../utils/ultils";
 
 export default new class extends RouterFn {
-    constructor() { super('/retaguarda/edit_conta_a_pagar', 'POST') }
+    constructor() { super('/retaguarda/reverter_quitacao', 'POST') }
 
     async fn(req: Request, res: Response) {
         if (!req.body.idLoja) {
@@ -16,10 +15,10 @@ export default new class extends RouterFn {
             return;
         }
 
-        if (!req.body.id) {
+        if (!req.body.contas.length) {
             res.json({
                 ok: false,
-                msg: 'Conta não foi identificada'
+                msg: 'Nenhuma conta recebida'
             })
             return;
         }
@@ -35,14 +34,14 @@ export default new class extends RouterFn {
 
         const pgSql = pgConnection(options)
 
+        const ids = req.body.contas.map(c => c.id)
+
         await pgSql(`update tb_pagar set
-            vencimento = ${req.body.vencimento ? `'${req.body.vencimento}'` : 'vencimento'},
-            valor = ${req.body.valor ? req.body.valor : 'valor'},
-            id_fornecedor = ${req.body.fornecedor ? req.body.fornecedor : 'id_fornecedor'},
-            id_grupo = ${req.body.grupo ? req.body.grupo : 'id_grupo'},
-            id_subgrupo = ${req.body.subgrupo ? req.body.subgrupo : 'id_subgrupo'},
-            descricao = ${!!req.body.descricao ? `'${aspasSimplesDB(req.body.descricao)}'` : 'descricao'}
-            where id = ${req.body.id}
+            data_pagamento = NULL,
+            id_carteira = 0,
+            valor_pago = 0,
+            status = 0
+            where id in (${ids.join()})
         `)
 
         res.json({

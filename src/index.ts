@@ -26,7 +26,7 @@ app.use(express.json())
                 console.log('API HTTPS rodando na porta ' + port)
             })
         } else {
-            app.listen(port, () => {
+            app.listen(port, async () => {
                 console.log(`Api rodando na porta ${port}`);
             })
         }

@@ -2,10 +2,9 @@ import { Request, Response } from "express";
 import { ClientConfig } from "pg";
 import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from '../../../../utils/pg_sql'
-import { aspasSimplesDB } from "../../../../utils/ultils";
 
 export default new class extends RouterFn {
-    constructor() { super('/retaguarda/edit_conta_a_pagar', 'POST') }
+    constructor() { super('/retaguarda/excluir_contas', 'POST') }
 
     async fn(req: Request, res: Response) {
         if (!req.body.idLoja) {
@@ -16,10 +15,10 @@ export default new class extends RouterFn {
             return;
         }
 
-        if (!req.body.id) {
+        if (!req.body.contas.length) {
             res.json({
                 ok: false,
-                msg: 'Conta não foi identificada'
+                msg: 'Nenhuma conta recebida'
             })
             return;
         }
@@ -35,15 +34,15 @@ export default new class extends RouterFn {
 
         const pgSql = pgConnection(options)
 
-        await pgSql(`update tb_pagar set
-            vencimento = ${req.body.vencimento ? `'${req.body.vencimento}'` : 'vencimento'},
-            valor = ${req.body.valor ? req.body.valor : 'valor'},
-            id_fornecedor = ${req.body.fornecedor ? req.body.fornecedor : 'id_fornecedor'},
-            id_grupo = ${req.body.grupo ? req.body.grupo : 'id_grupo'},
-            id_subgrupo = ${req.body.subgrupo ? req.body.subgrupo : 'id_subgrupo'},
-            descricao = ${!!req.body.descricao ? `'${aspasSimplesDB(req.body.descricao)}'` : 'descricao'}
-            where id = ${req.body.id}
-        `)
+        if (req.body.deletarRecorrente && req.body.contas.length === 1 && req.body.contas[0].tipo_conta === 1) {
+            await Promise.all([
+                pgSql(`delete from tb_recorrente where id = ${req.body.contas[0].id_vinculada}`),
+                pgSql(`delete from tb_pagar where status = 0 and id_vinculada = ${req.body.contas[0].id_vinculada}`),
+            ])
+        } else {
+            const ids = req.body.contas.map(c => c.id)
+            await pgSql(`delete from tb_pagar where status = 0 and id in (${ids.join()})`)
+        }
 
         res.json({
             ok: true

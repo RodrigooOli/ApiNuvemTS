@@ -7,7 +7,7 @@ export default new class extends RouterFn {
     }
 
     async fn(req: Request, res: Response): Promise<any> {
-        if (!req.body.lojasId || req.body.lojasId.length === 0) {
+        if ((!req.body.lojasId || req.body.lojasId.length === 0) && req.params.relatorio !== 'faturamento_por_loja') {
             res.json({
                 ok: false,
                 msg: 'Nenhuma loja selecionada!'

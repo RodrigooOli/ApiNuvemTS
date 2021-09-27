@@ -27,18 +27,16 @@ export default new class extends RouterFn {
 
         const pgSql = pgConnection(options)
 
-        console.log(req.body)
-
         const whereGrupo = filtros.grupo ? `and id_grupo = ${filtros.grupo}` : ''
         const whereSubgrupo = filtros.subgrupo ? `and id_subgrupo = ${filtros.subgrupo}` : ''
 
         const rows = await pgSql(`select 
             tp.*,
-            coalesce(tc.nome, '') as carteira,
+            coalesce(tc.nome, '') as nome_cliente,
             tg.grupo,
             ts.subgrupo
             from tb_receber tp
-            left join tb_carteira tc on tp.id_carteira = tc.id_carteira
+            left join tb_cliente tc on tp.id_cliente = tc.id_cliente 
             inner join tb_grupofin tg on tg.idgrupo = tp.id_grupo
             inner join tb_subgrupofin ts on ts.idsubgrupo = tp.id_subgrupo
             where vencimento >= '${filtros.dataIni}'::date and vencimento <= '${filtros.dataFim}'::date

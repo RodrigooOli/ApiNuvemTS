@@ -4,14 +4,9 @@ import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from '../../../../utils/pg_sql'
 import { addMeses, aspasSimplesDB } from "../../../../utils/ultils";
 
-enum TIPO_LANCAMENTO {
-    'NORMAL',
-    'PARCELADO' = 0,
-    'RECORRENTE',
-}
 
 export default new class extends RouterFn {
-    constructor() { super('/retaguarda/add_conta_a_pagar', 'POST') }
+    constructor() { super('/retaguarda/add_conta_a_receber', 'POST') }
 
     async fn(req: Request, res: Response) {
         if (!req.body.idLoja) {
@@ -34,11 +29,10 @@ export default new class extends RouterFn {
 
         const contasGravar = [{ ...req.body }];
         const contasGravada = [];
-        let id_vinculada = 0;
 
         if (req.body.tipo === 'PARCELADO') {
             contasGravar[0].descricao = `${contasGravar[0].descricao} 1/${req.body.qtdParcelas}`
-            req.body.paga = false;
+            req.body.recebida = false;
 
             for (let i = 1; i < req.body.qtdParcelas; i++) {
                 const dataVencimento = addMeses(`${req.body.vencimento} `, i)
@@ -51,68 +45,31 @@ export default new class extends RouterFn {
             }
         }
 
-        console.log(req.body)
+        for (let i = 0; i < contasGravar.length; i++) {
+            const conta = contasGravar[i];
 
-        if (req.body.tipo === "RECORRENTE") {
-            const conta = {
-                ...contasGravar[0],
-                vencimento: new Date(`${contasGravar[0].vencimento} `),
-            };
-
-            const rRecorrente = await pgSql(`insert into tb_recorrente (
-                dia_venc,
+            const rows = await pgSql(`insert into tb_receber (
+                vencimento,
                 valor,
                 id_cliente,
                 id_grupo,
                 id_subgrupo,
                 descricao,
-                ultimo_mes_lancado,
-                ultimo_ano_lancado,
-                tipo
-            ) values (
-                ${conta.vencimento.getDate()},
-                ${conta.valor},
-                0,
-                ${conta.grupo},
-                ${conta.subgrupo},
-                '${conta.descricao}',
-                ${conta.vencimento.getMonth() + 1},
-                ${conta.vencimento.getFullYear()},
-                1
-            ) returning id`)
-
-            id_vinculada = rRecorrente[0]['id']
-        }
-
-        for (let i = 0; i < contasGravar.length; i++) {
-            const conta = contasGravar[i];
-
-            const rows = await pgSql(`insert into tb_pagar (
-                vencimento,
-                valor,
-                id_fornecedor,
-                id_grupo,
-                id_subgrupo,
-                descricao,
                 status,
                 tipo_conta,
-                id_vinculada,
-                data_pagamento,
-                id_carteira,
-                valor_pago
+                data_recebimento,
+                valor_recebido
             ) values (
                 '${conta.vencimento}',
                 ${conta.valor},
-                ${conta.fornecedor || 0},
+                ${conta.cliente || 0},
                 ${conta.grupo},
                 ${conta.subgrupo},
                 upper('${aspasSimplesDB(conta.descricao)}'),
-                ${conta.paga ? 1 : 0},
-                ${TIPO_LANCAMENTO[conta.tipo]},
-                ${id_vinculada},
-                ${conta.paga ? `'${conta.dataPagamento}'` : 'NULL'},
-                ${conta.carteira},
-                ${conta.paga ? conta.valor : 0}
+                ${conta.recebida ? 1 : 0},
+                0,
+                ${conta.recebida ? `'${conta.dataRecebimento}'` : 'NULL'},
+                ${conta.recebida ? conta.valor : 0}
             ) returning *`)
 
             contasGravada.push(rows[0]);

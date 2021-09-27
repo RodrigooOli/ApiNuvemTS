@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { ClientConfig } from "pg";
 import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from '../../../../utils/pg_sql'
+import { verificaContasRecorrente } from "./verifica_contas_recorrente";
 
 export default new class extends RouterFn {
     constructor() { super('/retaguarda/load_contas_a_pagar', 'POST') }
@@ -17,6 +18,8 @@ export default new class extends RouterFn {
             return;
         }
 
+        await verificaContasRecorrente(req);
+
         const options: ClientConfig = {
             user: 'postgres',
             password: 'avfarila@2021!',
@@ -26,8 +29,6 @@ export default new class extends RouterFn {
         }
 
         const pgSql = pgConnection(options)
-
-        console.log(req.body)
 
         const whereGrupo = filtros.grupo ? `and id_grupo = ${filtros.grupo}` : ''
         const whereSubgrupo = filtros.subgrupo ? `and id_subgrupo = ${filtros.subgrupo}` : ''

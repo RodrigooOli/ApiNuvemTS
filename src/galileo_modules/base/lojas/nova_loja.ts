@@ -28,7 +28,7 @@ export default new class extends RouterFn {
                 id_representante
             ) values (
                 ${req.body.codCliente === '###' ? 'default' : req.body.codCliente},
-                '${req.body.nome}',
+                '${(req.body.nome || '').replace(/'/g, "''")}',
                 ${req.body.plano},
                 ${req.body.ativo},
                 ${!!req.body.cpfCnpj ? `'${req.body.cpfCnpj}'` : 'NULL'},

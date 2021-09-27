@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { ClientConfig } from "pg";
-import { RouterFn } from "../../../../models/router_model";
-import { pgConnection } from '../../../../utils/pg_sql'
+import { RouterFn } from "../../../models/router_model";
+import { pgConnection } from '../../../utils/pg_sql'
 
 export default new class extends RouterFn {
-    constructor() { super('/retaguarda/load_grupo_fin', 'POST') }
+    constructor() { super('/retaguarda/get_clientes', 'POST') }
 
     async fn(req: Request, res: Response) {
         if (!req.body.idLoja) {
@@ -25,13 +25,11 @@ export default new class extends RouterFn {
 
         const pgSql = pgConnection(options)
 
-        const where = !!req.body.soAtivos ? 'where ativo = 1' : ''
-
-        const rCategorias = await pgSql(`select * from tb_grupofin ${where} order by grupo`)
+        const rows = await pgSql(`select * from tb_cliente where ativo = 1 order by fantasia`)
 
         res.json({
             ok: true,
-            body: rCategorias
+            body: rows
         })
     }
 }

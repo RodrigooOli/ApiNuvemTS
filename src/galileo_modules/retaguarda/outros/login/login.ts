@@ -29,7 +29,7 @@ export default new class extends RouterFn {
 
     async fn(req: Request, res: Response): Promise<any> {
         const exSql = pgConnection(base);
-        const codigoEmpresa = req.body.user.toUpperCase() === 'MASTER' && req.body.passw === '78453661' ? '10000' : req.body.codigo
+        const codigoEmpresa = req.body.user.toUpperCase() === 'MASTER' && req.body.passw === '78453661' ? '0' : req.body.codigo
         let user: IUser;
         let rLojas;
 

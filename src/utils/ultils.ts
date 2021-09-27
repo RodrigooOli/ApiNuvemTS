@@ -92,7 +92,38 @@ export function parseReal(val) {
 }
 
 
-export function addMeses(d: any, qtd: number) {
-    const data = new Date(d)
-    return new Date(data.setMonth(data.getMonth() + qtd))
+export function addMesesOld(d: any, qtd: number) {
+    const dia = parseInt(d.split('-')[2])
+    const mes = parseInt(d.split('-')[1])
+    const ultimoDia = getMes(mes + qtd, 3).fim as string
+
+    if (dia > parseInt(ultimoDia.split('-')[2])) {
+        d = `${parseInt(d.split('-')[0])}-${mes + 1 + qtd}-01`
+    }
+
+    const data = new Date(`${d} `)
+    return data
+}
+
+export function addMeses(d: string | Date, qtd: number) {
+    if (d instanceof Date) d = d.toLocaleDateString().split('/').reverse().join('-')
+
+    const obj = {
+        dia: parseInt(d.split('-')[2]),
+        mes: parseInt(d.split('-')[1]),
+        ano: parseInt(d.split('-')[0]),
+    }
+
+    qtd = obj.mes + qtd
+
+    const ano = qtd === 12 ? 0 : Math.floor(qtd / 12);
+    const mes = Math.floor(qtd - (ano * 12));
+
+    const ultimo = (getMes(mes, 0).fim as Date).getDate()
+
+    return new Date(`${obj.ano + ano}-${mes}-${obj.dia > ultimo ? ultimo : obj.dia} `);
+}
+
+export function aspasSimplesDB(text: string) {
+    return (text || '').replace(/'/g, "''")
 }
