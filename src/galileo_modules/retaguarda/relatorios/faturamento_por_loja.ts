@@ -22,7 +22,7 @@ export default async (ids, filtros) => {
             union all
             select   
             tcr.valor_receb as faturamento
-            from tb_convenio_r  eceb tcr 
+            from tb_convenio_receb tcr 
             WHERE tcr.data_receb::date >= '${filtros.dataIni}' AND tcr.data_receb::date <= '${filtros.dataFim}'
         ) as total
     `).execute(lojasId);
@@ -30,6 +30,6 @@ export default async (ids, filtros) => {
     return rows.map(r => ({
         ...r,
         loja: lojas.find(l => l.id === r.id).nome,
-        faturamento: parseFloat(r.faturamento),
+        faturamento: Number(r.faturamento),
     }));
 }

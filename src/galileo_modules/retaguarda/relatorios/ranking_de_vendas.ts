@@ -13,7 +13,8 @@ export default async (LojasId, filtros) => {
 	const rows = await db(`select 
 	left(i.descricao,30) as descricao, 
 	sum(i.quantidade) as qntd, 
-	sum(i.vl_total) as vl_total
+	sum(i.vl_total) as vl_total,
+	i.und
 	from tb_nfe_item i 
 	inner join tb_nfe v 
 	on v.serie = i.serie and v.numero = i.numero
@@ -37,7 +38,7 @@ export default async (LojasId, filtros) => {
 	and f.ativo = 'S' and f.id <> 5
 	${whereGrupo}
 	${whereSubgrupo}
-	group by i.descricao`).execute(LojasId)
+	group by i.descricao, i.und`).execute(LojasId)
 
 	return rows.sort(sort[filtros.ordem] || (() => 1))
 }

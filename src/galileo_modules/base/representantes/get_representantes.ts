@@ -13,7 +13,17 @@ export default new class extends RouterFn {
             ok: true,
             body: rows.map(r => {
                 delete r.senha;
-                return r;
+                return {
+                    ...r,
+                    suporte: {
+                        telefones: r.suporte.telefones || [],
+                        whatsapp: r.suporte.whatsapp || [],
+                        plantao: r.suporte.plantao || [],
+                        telefones_horario: r.suporte.telefones_horario || '',
+                        whatsapp_horario: r.suporte.whatsapp_horario || '',
+                        plantao_horario: r.suporte.plantao_horario || '',
+                    }
+                };
             })
         })
     }

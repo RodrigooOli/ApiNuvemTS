@@ -32,11 +32,13 @@ export default async (req) => {
 
     return rCentroDeCusto.reduce((acc, c) => {
         const ind = acc.findIndex(custo => custo.grupo === c.grupo);
+
         if (ind !== -1) {
-            acc[ind].valor += parseFloat(c.valor)
+            acc[ind].valor += Number(c.valor)
         } else {
-            acc.push({ ...c, valor: parseFloat(c.valor) })
+            acc.push({ ...c, valor: Number(c.valor) })
         }
+
         return acc;
     }, [])
 }

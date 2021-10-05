@@ -88,14 +88,26 @@ export default new class extends RouterFn {
         }
 
 
-        const rRepresentante = await exSql(`select id, nome, wpp_suporte from tb_representantes where id = ${rLojas[0].id_representante}`)
+        const rRepresentante = await exSql(`select id, nome, suporte from tb_representantes where id = ${rLojas[0].id_representante}`)
+
+        const representante = rRepresentante.map(r => ({
+            ...r,
+            suporte: {
+                telefones: r.suporte.telefones || [],
+                whatsapp: r.suporte.whatsapp || [],
+                plantao: r.suporte.plantao || [],
+                telefones_horario: r.suporte.telefones_horario || '',
+                whatsapp_horario: r.suporte.whatsapp_horario || '',
+                plantao_horario: r.suporte.plantao_horario || '',
+            }
+        }))
 
         res.json({
             ok: true,
             body: {
                 user: user,
                 lojas: rLojas,
-                representante: rRepresentante,
+                representante: representante,
             }
         })
     }

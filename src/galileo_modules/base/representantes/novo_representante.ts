@@ -12,12 +12,26 @@ export default new class extends RouterFn {
         if (!cpf.isValid(req.body.doc) && !cnpj.isValid(req.body.doc)) {
             res.json({
                 ok: false,
-                msg: 'CPF OU CNPJ NÃO É VÁLIDO'
+                msg: 'CPF OU CNPJ INVÁLIDO'
             })
             return;
         }
 
-        const rows = await pgSql(`insert into tb_representantes(nome, celular, cpf_cnpj, ativo, supervisor, wpp_suporte) values ('${req.body.nome}', '${req.body.celular}', '${req.body.doc}', ${!!req.body.ativo}, ${!!req.body.supervisor}, '${req.body.wppSuporte}') returning *`);
+        const rows = await pgSql(`insert into tb_representantes (
+            nome,
+            celular,
+            cpf_cnpj,
+            ativo,
+            supervisor,
+            suporte
+        ) values (
+            '${req.body.nome}', 
+            '${req.body.celular}', 
+            '${req.body.doc}', 
+            ${!!req.body.ativo}, 
+            ${!!req.body.supervisor}, 
+            '${JSON.stringify(req.body.suporte)}'
+        ) returning *`);
 
         res.json({
             ok: true,

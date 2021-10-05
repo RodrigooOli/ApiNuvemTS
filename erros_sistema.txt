@@ -118,3 +118,27 @@ msg: error: unterminated quoted string at or near "e'),
                 0
             ) returning *",
 data_erro: Mon Sep 27 2021 19:24:30 GMT-0300 (Horário Padrão de Brasília)
+
+
+[04/10/2021 12:52:34] - error: syntax error at or near "{"
+origem: API NUVEM
+origem_d: /base/novo_representante
+msg: error: unterminated quoted string at or near "'{"whatsapp":[],"telefones":[],"plantao":[],"whatsapp_horario":[],"telefones_horario":[],"plantao_horario":[]}'
+        ') returning *",
+data_erro: Mon Oct 04 2021 12:52:34 GMT-0300 (Horário Padrão de Brasília)
+
+
+[04/10/2021 12:53:54] - error: syntax error at or near "{"
+origem: API NUVEM
+origem_d: /base/novo_representante
+msg: error: unterminated quoted string at or near "'{"whatsapp":[],"telefones":[],"plantao":[],"whatsapp_horario":"","telefones_horario":"","plantao_horario":""}'
+        ') returning *",
+data_erro: Mon Oct 04 2021 12:53:54 GMT-0300 (Horário Padrão de Brasília)
+
+
+[04/10/2021 12:55:28] - error: syntax error at or near "{"
+origem: API NUVEM
+origem_d: /base/novo_representante
+msg: error: unterminated quoted string at or near "'{"whatsapp":[],"telefones":[],"plantao":[],"whatsapp_horario":"","telefones_horario":"","plantao_horario":""}'
+        ') returning *",
+data_erro: Mon Oct 04 2021 12:55:28 GMT-0300 (Horário Padrão de Brasília)

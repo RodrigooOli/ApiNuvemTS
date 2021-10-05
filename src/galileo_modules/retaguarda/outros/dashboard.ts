@@ -52,7 +52,6 @@ export default new class extends RouterFn {
             const fnVendasPorFormaPagamento = (await import('../dashboard/vendas_por_forma_pagamento')).default;
             const fnFaturamentoPorCaixa = (await import('../dashboard/faturamento_por_caixa')).default;
 
-
             const result = await fnResult(req)
             const contas = await fnContas(req)
             const centroDeCusto = await fnCentroDeCusto(req)

@@ -28,10 +28,10 @@ export default async (req) => {
     ) as total`).execute(req.body.lojasId);
 
     return rows.reduce((acc, row) => {
-        acc.entradas += parseFloat(row.entradas);
-        acc.saidas += parseFloat(row.saidas);
-        acc.saldo += parseFloat(row.saldo);
-        acc.previsao_30_dias += parseFloat(row.previsao_30_dias);
+        acc.entradas += Number(row.entradas);
+        acc.saidas += Number(row.saidas);
+        acc.saldo += Number(row.saldo);
+        acc.previsao_30_dias += Number(row.previsao_30_dias);
         return acc;
     }, {
         entradas: 0,
