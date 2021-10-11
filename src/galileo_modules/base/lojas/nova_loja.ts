@@ -36,7 +36,10 @@ export default new class extends RouterFn {
                 ${req.body.idRepresentante}
             ) returning *`);
 
-            if (!!rows[0]) await pgSql(`CREATE DATABASE d${rows[0].id} WITH TEMPLATE ddump OWNER postgres`);
+            if (!!rows[0]) {
+                await pgSql(`select pg_terminate_backend(pid) from pg_stat_activity where datname='ddump'`);
+                await pgSql(`CREATE DATABASE d${rows[0].id} WITH TEMPLATE ddump OWNER postgres`);
+            }
 
             res.json({
                 ok: true,

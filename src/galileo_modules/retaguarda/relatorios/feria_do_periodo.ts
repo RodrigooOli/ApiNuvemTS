@@ -329,5 +329,9 @@ export default async (lojasId, filtros) => {
     result.push(totalPeriodo)
   }
 
+  totalPeriodo.ticket_medio = totalPeriodo.total / totalPeriodo.vendas
+
+  // console.log(totalPeriodo)
+
   return result;
 }

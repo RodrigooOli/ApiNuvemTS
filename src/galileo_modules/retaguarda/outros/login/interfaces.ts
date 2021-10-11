@@ -9,4 +9,5 @@ export interface IUser {
     ativo: number
     v_dashboard: boolean
     permissao: number[]
+    representante: number
 }

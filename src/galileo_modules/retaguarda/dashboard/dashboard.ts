@@ -1,24 +1,6 @@
 import { Request, Response } from "express-serve-static-core";
 import { RouterFn } from "../../../models/router_model";
-import { pgConnection } from "../../../utils/pg_sql";
-
-const base = {
-    user: 'postgres',
-    password: 'avfarila@2021!',
-    host: '191.252.220.143',
-    database: 'base',
-    port: 5432
-}
-
-function conn(id) {
-    return {
-        user: 'postgres',
-        password: 'avfarila@2021!',
-        host: '191.252.220.143',
-        database: `d${id}`,
-        port: 5432
-    }
-}
+import { verificaContasRecorrente } from "../financeiro/contas_a_pagar/verifica_contas_recorrente";
 
 export default new class extends RouterFn {
     constructor() {
@@ -43,14 +25,27 @@ export default new class extends RouterFn {
         }
 
         if (req.body.lojasId && req.body.lojasId.length > 0) {
-            const fnResult = (await import('../dashboard/totais')).default;
-            const fnContas = (await import('../dashboard/contas')).default;
-            const fnCentroDeCusto = (await import('../dashboard/centro_de_custo')).default;
-            const fnRanking = (await import('../dashboard/ranking_de_vendas')).default;
-            const fnFaturamentoPorDia = (await import('../dashboard/faturamento_por_dia')).default;
-            const fnSaldoPorDia = (await import('../dashboard/saldo_por_dia')).default;
-            const fnVendasPorFormaPagamento = (await import('../dashboard/vendas_por_forma_pagamento')).default;
-            const fnFaturamentoPorCaixa = (await import('../dashboard/faturamento_por_caixa')).default;
+            for (let i = 0; i < req.body.lojasId.length; i++) {
+                const idLoja = req.body.lojasId[i];
+
+                await verificaContasRecorrente({
+                    body: {
+                        filtros: {
+                            dataFim: req.body.dataFim
+                        },
+                        idLoja: idLoja
+                    }
+                } as Request)
+            }
+
+            const fnResult = (await import('./totais')).default;
+            const fnContas = (await import('./contas')).default;
+            const fnCentroDeCusto = (await import('./centro_de_custo')).default;
+            const fnRanking = (await import('./ranking_de_vendas')).default;
+            const fnFaturamentoPorDia = (await import('./faturamento_por_dia')).default;
+            const fnSaldoPorDia = (await import('./saldo_por_dia')).default;
+            const fnVendasPorFormaPagamento = (await import('./vendas_por_forma_pagamento')).default;
+            const fnFaturamentoPorCaixa = (await import('./faturamento_por_caixa')).default;
 
             const result = await fnResult(req)
             const contas = await fnContas(req)
@@ -65,7 +60,7 @@ export default new class extends RouterFn {
                 entradas: result.entradas,
                 saidas: result.saidas,
                 saldo: result.saldo,
-                previsao: result.previsao_30_dias
+                previsao: result.previsao_final
             }
 
             body.centroDeCusto = centroDeCusto;

@@ -24,9 +24,9 @@ export const gravaErroSistema = async (obj: errorObj) => {
         const exists = fs.existsSync('./erros_sistema.txt')
         const erros = exists ? fs.readFileSync('./erros_sistema.txt') : '';
         fs.writeFileSync('./erros_sistema.txt', `${erros}\n\n\n` + `[${new Date(Date.now()).toLocaleString('pt-br')}] - ${e.toString()}
-origem: ${obj.origem}
-origem_d: ${obj.origem_d}
-msg: ${obj.msg},
-data_erro: ${obj.dataErr}`)
+        origem: ${obj.origem}
+        origem_d: ${obj.origem_d}
+        msg: ${obj.msg},
+        data_erro: ${obj.dataErr}`)
     }
 }

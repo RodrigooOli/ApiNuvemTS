@@ -32,7 +32,7 @@ export const formataDataDB = (date: any, type: 'date' | 'timestamp' = 'timestamp
 }
 
 
-export function getMes(m, formato) {
+export function getMes(m, formato = 4) {
     if (!m) m = new Date(Date.now()).getMonth() + 1;
 
     return {

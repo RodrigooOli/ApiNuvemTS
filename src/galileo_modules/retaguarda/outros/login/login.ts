@@ -28,13 +28,23 @@ export default new class extends RouterFn {
     }
 
     async fn(req: Request, res: Response): Promise<any> {
-        const exSql = pgConnection(base);
-        const codigoEmpresa = req.body.user.toUpperCase() === 'MASTER' && req.body.passw === '78453661' ? '0' : req.body.codigo
         let user: IUser;
         let rLojas;
 
+        const exSql = pgConnection(base);
+        const ehRepresentante = req.body.user.split('.')[0] === 'galileo'
+        // const codigoEmpresa = req.body.user.toUpperCase() === 'MASTER' && req.body.passw === '78453661' ? '0' : req.body.codigo
 
-        const rUser = await exSql(`select * from tb_operadores where upper(login) = upper('${req.body.user}') and senha = md5('${req.body.passw}') and cod_empresa = ${codigoEmpresa}`)
+        var nome = req.body.user.split('.')[1]
+
+        const rUser = ehRepresentante
+            ? await exSql(`select to2.*
+            from tb_operadores to2
+            inner join tb_representantes tr 
+            on upper(tr.nome) = upper('${nome}') and tr.senha = md5('${req.body.passw}')
+            where tr.id = to2.representante
+            `)
+            : await exSql(`select * from tb_operadores where upper(login) = upper('${req.body.user}') and senha = md5('${req.body.passw}') and cod_empresa = ${req.body.codigo}`)
 
         if (rUser.length === 0) {
             res.json({
@@ -54,13 +64,14 @@ export default new class extends RouterFn {
             nivel: rUser[0].nivel,
             cod_atd: rUser[0].cod_atd,
             v_dashboard: false,
-            permissao: []
+            permissao: [],
+            representante: rUser[0].representante
         }
 
         if (!user.ativo) {
             res.json({
                 ok: false,
-                msg: 'O usuário foi desativado!'
+                msg: 'O usuário está desativado!'
             })
             return
         }
@@ -77,7 +88,8 @@ export default new class extends RouterFn {
                     and tol.id_operador = ${user.id_operador}`
                 : ''
             }
-            where cod_cliente = ${req.body.codigo}`);
+            where cod_cliente = ${req.body.codigo}
+            ${!!user.representante && rUser[0].cod_empresa !== 0 ? `and id_representante = ${user.representante}` : ''}`);
 
         if (rLojas.length === 0) {
             res.json({
