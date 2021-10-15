@@ -29,6 +29,10 @@ export default async (req) => {
     where p.data_pagamento >= '${req.body.dataIni}' and p.data_pagamento <= '${req.body.dataFim}' and 
     status=1 group by p.data_pagamento) as s1 group by datareg order by datareg`).execute(req.body.lojasId)
 
+    rows.sort((a, b) => {
+        return Date.parse(a.datareg) > Date.parse(b.datareg) ? 1 : -1
+    })
+
     if (maisDeUmMes) {
         if (maisDeUmAno) {
             const faturamentoPorMes = rows.reduce((acc, fat) => {

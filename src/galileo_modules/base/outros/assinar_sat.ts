@@ -13,7 +13,6 @@ export default new class extends RouterFn {
 
         try {
             if (!!req.body.cnpj) {
-                console.log(req.body.cnpj)
                 if (!cnpj.isValid(req.body.cnpj)) {
                     res.json({
                         ok: false,

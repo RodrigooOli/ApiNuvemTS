@@ -4,10 +4,8 @@ import { pgConnection } from "../../../utils/pg_sql";
 const pgSql = pgConnection()
 
 export default async (ids, filtros) => {
-    const lojas = await pgSql(`select id, nome from tb_lojas where id_franquia = ${filtros.idFranquia} and id <> 'dump'`)
+    const lojas = await pgSql(`select id, nome from tb_lojas where id_franquia = ${filtros.idFranquia} and id <> 'dump' ${!!filtros.apenasAtivas ? 'and not chave isnull' : ''}`)
     const lojasId = lojas.map(l => l.id)
-
-    console.log(filtros)
 
     const rows = await db(`
         SELECT

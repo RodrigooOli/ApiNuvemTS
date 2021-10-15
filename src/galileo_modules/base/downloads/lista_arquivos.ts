@@ -11,6 +11,7 @@ export default new class extends RouterFn {
         const icons = {
             'zip': 'folder',
             'exe': 'launch',
+            'apk': 'android',
         }
 
         try {
@@ -29,10 +30,17 @@ export default new class extends RouterFn {
                 body: rows.filter(r => r.type === 1).map(r => ({
                     ...r,
                     url: `https://lsiconsultoria.com.br/downloadplus/${req.params.arquivo}/${r.name}`,
-                    icon: icons[r.name.split('.')[1]] || 'folder'
+                    icon: icons[r.name.split('.').pop()] || 'folder'
                 }))
             })
         } catch (e) {
+            if (e.toString() === "FTPError: 530 Desculpe, máximo de conexões: 5 por usuario") {
+                res.json({
+                    ok: false,
+                    msg: 'FTPError: 530 Desculpe, tente novamente'
+                })
+                return;
+            }
             throw e;
         }
     }

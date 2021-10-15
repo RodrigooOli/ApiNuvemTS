@@ -15,6 +15,7 @@ export default new class extends RouterFn {
                 nivel = ${req.body.nivel},
                 permissao = '[${req.body.permissao.toString()}]',
                 login = '${req.body.login}',
+                id_franquia = ${req.body.idFranquia ?? 'id_franquia'},
                 ativo = ${req.body.ativo}
                 ${req.body.senha ? `, senha = ${req.body.senha}` : ''}
             where id = ${req.body.id}

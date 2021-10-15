@@ -32,8 +32,7 @@ export default new class extends RouterFn {
         let rLojas;
 
         const exSql = pgConnection(base);
-        const ehRepresentante = req.body.user.split('.')[0] === 'galileo'
-        // const codigoEmpresa = req.body.user.toUpperCase() === 'MASTER' && req.body.passw === '78453661' ? '0' : req.body.codigo
+        const ehRepresentante = `${req.body.user.split('.')[0]}`.toUpperCase() === 'GALILEO'
 
         var nome = req.body.user.split('.')[1]
 
@@ -80,7 +79,10 @@ export default new class extends RouterFn {
         user.permissao = permissoes.filter(p => p !== 28 || user.nivel === 4)
         user.v_dashboard = user.nivel === 4 || permissoes.includes(-1)
 
-        rLojas = await exSql(`select tl.* 
+        const whereRepresentante = !!user.representante && rUser[0].cod_empresa !== 0 ? `and tl.id_representante = ${user.representante}` : ''
+
+        rLojas = await exSql(`select tl.*,
+            coalesce(tf.nome, '') as nome_franquia
             from tb_lojas tl
             ${user.nivel !== 4
                 ? `inner join tb_operadores_lojas tol 
@@ -88,8 +90,10 @@ export default new class extends RouterFn {
                     and tol.id_operador = ${user.id_operador}`
                 : ''
             }
+            left join tb_franquias tf
+            on tf.id = tl.id_franquia
             where cod_cliente = ${req.body.codigo}
-            ${!!user.representante && rUser[0].cod_empresa !== 0 ? `and id_representante = ${user.representante}` : ''}`);
+            ${whereRepresentante}`);
 
         if (rLojas.length === 0) {
             res.json({

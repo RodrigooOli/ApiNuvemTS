@@ -51,8 +51,6 @@ export default new class extends RouterFn {
             }
         }
 
-        console.log(req.body)
-
         if (req.body.tipo === "RECORRENTE") {
             const conta = {
                 ...contasGravar[0],

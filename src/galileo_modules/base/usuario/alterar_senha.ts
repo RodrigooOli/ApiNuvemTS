@@ -9,7 +9,6 @@ export default new class extends RouterFn {
 
     async fn(req: Request, res: Response) {
         const valid = await pgSql(`select senha from tb_representantes where id = ${req.body.id} and senha = md5('${req.body.senhaAtual}')`)
-        console.log(valid)
 
         if (!valid[0]) {
             res.json({
