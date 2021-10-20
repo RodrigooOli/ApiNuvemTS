@@ -4,6 +4,11 @@ import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from '../../../../utils/pg_sql'
 import { addMeses, aspasSimplesDB } from "../../../../utils/ultils";
 
+enum TIPO_LANCAMENTO {
+    'NORMAL',
+    'RECORRENTE',
+    'PARCELADO',
+}
 
 export default new class extends RouterFn {
     constructor() { super('/retaguarda/add_conta_a_receber', 'POST') }
@@ -67,7 +72,7 @@ export default new class extends RouterFn {
                 ${conta.subgrupo},
                 upper('${aspasSimplesDB(conta.descricao)}'),
                 ${conta.recebida ? 1 : 0},
-                0,
+                ${TIPO_LANCAMENTO[conta.tipo]},
                 ${conta.recebida ? `'${conta.dataRecebimento}'` : 'NULL'},
                 ${conta.recebida ? conta.valor : 0}
             ) returning *`)

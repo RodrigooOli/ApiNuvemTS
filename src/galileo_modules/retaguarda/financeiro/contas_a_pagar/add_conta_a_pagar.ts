@@ -6,8 +6,8 @@ import { addMeses, aspasSimplesDB } from "../../../../utils/ultils";
 
 enum TIPO_LANCAMENTO {
     'NORMAL',
-    'PARCELADO' = 0,
     'RECORRENTE',
+    'PARCELADO',
 }
 
 export default new class extends RouterFn {

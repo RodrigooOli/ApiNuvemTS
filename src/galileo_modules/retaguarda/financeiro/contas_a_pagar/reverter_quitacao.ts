@@ -23,7 +23,6 @@ export default new class extends RouterFn {
             return;
         }
 
-
         const options: ClientConfig = {
             user: 'postgres',
             password: 'avfarila@2021!',
@@ -33,6 +32,17 @@ export default new class extends RouterFn {
         }
 
         const pgSql = pgConnection(options)
+
+        const rPin = await pgSql(`select pin from tb_pin where pin = md5('${req.body.pin}')`)
+
+        if (rPin.length === 0) {
+            res.json({
+                ok: false,
+                msg: 'PIN INCORRETO'
+            })
+
+            return
+        }
 
         const ids = req.body.contas.map(c => c.id)
 

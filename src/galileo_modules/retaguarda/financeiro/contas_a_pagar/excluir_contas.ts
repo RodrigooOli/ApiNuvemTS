@@ -34,6 +34,17 @@ export default new class extends RouterFn {
 
         const pgSql = pgConnection(options)
 
+        const rPin = await pgSql(`select pin from tb_pin where pin = md5('${req.body.pin}')`)
+
+        if (rPin.length === 0) {
+            res.json({
+                ok: false,
+                msg: 'PIN INCORRETO'
+            })
+
+            return
+        }
+
         if (req.body.deletarRecorrente && req.body.contas.length === 1 && req.body.contas[0].tipo_conta === 1) {
             await Promise.all([
                 pgSql(`delete from tb_recorrente where id = ${req.body.contas[0].id_vinculada}`),
