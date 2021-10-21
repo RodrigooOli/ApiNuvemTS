@@ -1,3 +1,6 @@
+export const arrMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+export const arrMesesMin = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+
 export class Copy {
     constructor(obj) {
         Object.keys(obj).forEach(k => this[k] = obj[k]);
@@ -126,4 +129,26 @@ export function addMeses(d: string | Date, qtd: number) {
 
 export function aspasSimplesDB(text: string) {
     return (text || '').replace(/'/g, "''")
+}
+
+export function dateFormat(date = Date.now(), tipo: 'ext' | 'date' | 'timestamp' | 'miniext' = 'ext') {
+    const data = new Date(date)
+
+    switch (tipo) {
+        case 'ext':
+            return `${data.getDate()} de ${arrMeses[new Date(data).getMonth()]} ${data.getFullYear()}`
+            break;
+        case 'miniext':
+            return `${data.getDate()} ${arrMesesMin[new Date(data).getMonth()]} ${data.getFullYear()}`
+            break;
+        case 'date':
+            return data.toLocaleDateString().split('/').reverse().join('-')
+            break;
+        case 'timestamp':
+            return `${data.toLocaleString().split(' ')[0].split('/').reverse().join('-')} ${data.toLocaleString().split(' ').pop()}`
+            break;
+
+        default:
+            break;
+    }
 }

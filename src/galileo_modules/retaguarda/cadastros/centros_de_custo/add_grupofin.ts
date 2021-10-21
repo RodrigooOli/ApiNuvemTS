@@ -34,6 +34,11 @@ export default new class extends RouterFn {
         const pgSql = pgConnection(options)
 
         const rows = await pgSql(`insert into tb_grupofin (grupo, ativo, tipo) values (upper('${req.body.nome}'), ${req.body.ativo ? 1 : 0}, upper('${req.body.tipo}')) returning *`)
+        await pgSql(`insert into tb_subgrupofin (subgrupo, idgrupo, ativo) values (
+            upper('${req.body.nome}'), 
+            ${rows[0]['idgrupo']},
+            ${req.body.ativo ? 1 : 0}
+        )`)
 
         res.json({
             ok: true,

@@ -29,7 +29,7 @@ export const db = (sql) => {
                         const rtt = await exSql(sql.replace(/(\$idLoja)/g, id))
 
                         rows.push(...rtt.map((obj) => ({
-                            id: id,
+                            idLoja: id,
                             ...obj
                         })));
 

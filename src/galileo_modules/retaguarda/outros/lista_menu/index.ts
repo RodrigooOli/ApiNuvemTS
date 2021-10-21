@@ -62,11 +62,11 @@ export default new class extends RouterFn {
                     route: m2.rota,
                     icon: m2.icon,
                     subMenus: [],
-                    disable: rOperador[0]['cod_empresa'] === 0 && !!m2.ativo_para_o_master ? false : !m2.ativo || !(rOperador[0].nivel === 4 || permissao.includes(m2.id))
+                    disable: !m2.ativo || !(rOperador[0].nivel === 4 || permissao.includes(m2.id))
                 })).sort((a: any, b: any) => a.title > b.title ? 1 : -1),
-                disable: rOperador[0]['cod_empresa'] === 0 && !!m.ativo_para_o_master ? false : !m.ativo || !(rOperador[0].nivel === 4 || permissao.includes(m.id))
+                disable: !m.ativo || !(rOperador[0].nivel === 4 || permissao.includes(m.id))
             })).sort((a: any, b: any) => a.title > b.title ? 1 : -1),
-            disable: rOperador[0]['cod_empresa'] === 0 && !!menu.ativo_para_o_master ? false : !menu.ativo || !(rOperador[0].nivel === 4 || permissao.includes(menu.id))
+            disable: !menu.ativo || !(rOperador[0].nivel === 4 || permissao.includes(menu.id))
         } as IMenuItem)).sort((a: any, b: any) => a.title > b.title ? 1 : -1)
 
         res.json({

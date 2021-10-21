@@ -27,7 +27,7 @@ export default async (ids, filtros) => {
 
     return rows.map(r => ({
         ...r,
-        loja: lojas.find(l => l.id === r.id).nome,
+        loja: lojas.find(l => l.id === r.idLoja).nome,
         faturamento: Number(r.faturamento),
     }));
 }
