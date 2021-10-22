@@ -32,8 +32,8 @@ export default async (LojasId, filtros) => {
 	on ts.idsubgrupo = tp.idsubgrupo 
 	where c.data_abertura::date >= '${filtros.dataIni}'
 	and c.data_abertura::date   <= '${filtros.dataFim}'
-	and v.dthr_saida::time >= '${filtros.horaIni}:00'
-	and v.dthr_saida::time <= '${filtros.horaFim}:59'
+	and v.dthr_saida::time >= '${filtros.horaIni || '00:00'}:00'
+	and v.dthr_saida::time <= '${filtros.horaFim || '23:59'}:59'
 	and v.situacao in ('E','O') 
 	and f.ativo = 'S' and f.id <> 5
 	${whereGrupo}

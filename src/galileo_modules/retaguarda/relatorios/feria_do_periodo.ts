@@ -2,7 +2,7 @@ import { db } from "../../../common/ex_sql_relatorio";
 
 const sql = (filtros) => {
   const peloSistema = `select *,
-  (total / vendas) as ticket_medio
+  (total / case when vendas <> 0 then vendas else 1 end) as ticket_medio
   from (
     select 
     id_turno,
@@ -98,7 +98,7 @@ const sql = (filtros) => {
   switch (filtros.origem) {
     case 'CONFERENCIA':
       return `select *,
-      total / vendas as ticket_medio
+      total / case when vendas <> 0 then vendas else 1 end as ticket_medio
       from (
         select 
         id_turno,
@@ -199,97 +199,6 @@ const sql = (filtros) => {
       break;
     case 'SISTEMA':
       return peloSistema;
-      // `select
-      //       id_turno,
-      //       sum(dinheiro) as DINHEIRO,
-      //       sum(pix) as PIX,
-      //       sum(credito) as CREDITO,
-      //       sum(debito) as DEBITO,
-      //       sum(troca) as TROCA,
-      //       sum(outros) as OUTROS,
-      //       sum(voucher) as VOUCHER,
-      //       round((sum(dinheiro) + sum(pix) + sum(credito) + sum(debito) + sum(troca) + sum(voucher) + sum(outros) + sum(recebimento)),2) as TOTAL,
-      //       sum(despesa) as DESPESA,
-      //       sum(pagamentos) as PAGAMENTOS,
-      //       sum(recebimento) as RECEBIMENTOS,
-      //       round((sum(dinheiro) + sum(pix) + sum(credito) + sum(debito) + sum(troca) + sum(voucher) + sum(outros) + sum(recebimento) - sum(despesa) - sum(pagamentos)),2) as LIQUIDO
-      //       from (    
-      //       select cx.id_turno,
-      //       case when f.grupo = 1 then
-      //       coalesce(p.valor - n.vl_troco ,0) else 0 end as dinheiro,
-      //       case when f.grupo = 2 then
-      //       coalesce(p.valor,0) else 0 end as PIX,
-      //       case when f.grupo = 3 then
-      //       coalesce(p.valor,0) else 0 end as CREDITO,
-      //       case when f.grupo = 4 then
-      //       coalesce(p.valor,0) else 0 end as DEBITO,
-      //       case when f.grupo = 5 then
-      //       coalesce(p.valor,0) else 0 end as PRAZO,
-      //       case when f.grupo = 6 then
-      //       coalesce(p.valor,0) else 0 end as VOUCHER,
-      //       case when f.grupo = 7 then
-      //       coalesce(p.valor,0) else 0 end as TROCA,
-      //       case when f.grupo = 8 then
-      //       coalesce(p.valor,0) else 0 end as OUTROS,
-      //       0 as recebimento,
-      //       0 as despesa,
-      //       0 as pagamentos
-      //       from tb_nfe_pagamento p 
-      //       inner join tb_nfe n on n.serie=p.serie and n.numero=p.numero 
-      //       inner join tb_forma_pagamento f on p.forma_pagamento=f.id 
-      //       inner join tb_caixa_movimento cx on  n.id_caixa_movimento=cx.id_caixa_movimento 
-      //       where cx.data_abertura::date >= '${filtros.dataIni}' and cx.data_abertura::date <= '${filtros.dataFim}' and n.situacao in ('E','O') and f.ativo ='S'
-      //       union all
-      //       SELECT 
-      //       cx.id_turno,
-      //       0 as dinheiro,
-      //       0 as pix,
-      //       0 as credito,
-      //       0 as debito,
-      //       0 as prazo,
-      //       0 as voucher,
-      //       0 as troca,
-      //       0 as outros,
-      //       0 as recebimento,
-      //       d.VALOR_DESPESA as despesa,
-      //       0 as pagamentos
-      //       FROM TB_DESPESA d 
-      //       inner join tb_caixa_movimento cx on cx.id_caixa_movimento = d.id_caixa 
-      //       WHERE d.DATA_DESPESA::date >= '${filtros.dataIni}' AND d.DATA_DESPESA::date <= '${filtros.dataFim}'
-      //       union all
-      //       select 
-      //       9 as id_turno,
-      //       0 as dinheiro,
-      //       0 as pix,
-      //       0 as credito,
-      //       0 as debito,
-      //       0 as prazo,
-      //       0 as voucher,
-      //       0 as troca,
-      //       0 as outros,
-      //       tcr.valor_receb as recebimento,
-      //       0 as despesa,
-      //       0 as pagamentos
-      //       from tb_convenio_receb tcr
-      //       WHERE tcr.data_receb::date >= '${filtros.dataIni}' AND tcr.data_receb::date <= '${filtros.dataFim}'    
-      //       union all
-      //       select 
-      //       9 as id_turno,
-      //       0 as dinheiro,
-      //       0 as pix,
-      //       0 as credito,
-      //       0 as debito,
-      //       0 as prazo,
-      //       0 as voucher,
-      //       0 as troca,
-      //       0 as outros,
-      //       0 as recebimento,
-      //       0 as despesa,
-      //       tp.valor_pago as pagamentos
-      //       from tb_pagar tp 
-      //       WHERE tp.data_pagamento::date >= '${filtros.dataIni}' AND tp.data_pagamento::date <= '${filtros.dataFim}'
-      //       ) t
-      //       group by id_turno`
       break;
 
     default:
@@ -329,7 +238,7 @@ export default async (lojasId, filtros) => {
     result.push(totalPeriodo)
   }
 
-  totalPeriodo.ticket_medio = totalPeriodo.total / totalPeriodo.vendas
+  totalPeriodo.ticket_medio = totalPeriodo.total / totalPeriodo.vendas || 1
 
   // console.log(totalPeriodo)
 
