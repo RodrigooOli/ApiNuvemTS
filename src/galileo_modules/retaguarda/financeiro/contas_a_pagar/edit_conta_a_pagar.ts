@@ -41,7 +41,8 @@ export default new class extends RouterFn {
             id_fornecedor = ${req.body.fornecedor ? req.body.fornecedor : 'id_fornecedor'},
             id_grupo = ${req.body.grupo ? req.body.grupo : 'id_grupo'},
             id_subgrupo = ${req.body.subgrupo ? req.body.subgrupo : 'id_subgrupo'},
-            descricao = ${!!req.body.descricao ? `'${aspasSimplesDB(req.body.descricao)}'` : 'descricao'}
+            descricao = ${!!req.body.descricao ? `'${aspasSimplesDB(req.body.descricao)}'` : 'descricao'},
+            boleto = ${req.body.boleto ? `'${req.body.boleto}'` : 'boleto'}
             where id = ${req.body.id}
         `)
 

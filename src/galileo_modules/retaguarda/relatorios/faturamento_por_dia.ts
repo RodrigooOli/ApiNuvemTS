@@ -1,3 +1,4 @@
+import { situacoesNfe } from "../../../common/constants";
 import { db } from "../../../common/ex_sql_relatorio";
 
 export default async (LojasId, filtros) => {
@@ -44,7 +45,7 @@ export default async (LojasId, filtros) => {
   inner join tb_nfe n on n.serie=p.serie and n.numero=p.numero 
   inner join tb_forma_pagamento f on p.forma_pagamento=f.id 
   inner join tb_caixa_movimento cx on  n.id_caixa_movimento=cx.id_caixa_movimento 
-  where cx.data_abertura::date >= '${filtros.dataIni}' and cx.data_abertura::date <= '${filtros.dataFim}' and n.situacao in ('E','O') and f.ativo ='S'
+  where cx.data_abertura::date >= '${filtros.dataIni}' and cx.data_abertura::date <= '${filtros.dataFim}' and n.situacao ${situacoesNfe[filtros.situacaoNfe || 'TUDO']} and f.ativo ='S'
   union all
   SELECT pg.data_pagamento::date as datareg, 
   0 as dinheiro,

@@ -1,3 +1,4 @@
+import { situacoesNfe } from '../../../common/constants';
 import { db } from '../../../common/ex_sql_relatorio';
 
 export default async (req) => {
@@ -23,7 +24,7 @@ export default async (req) => {
     inner join tb_nfe n on n.serie=p.serie and n.numero=p.numero 
     inner join tb_forma_pagamento f on p.forma_pagamento=f.id 
     inner join tb_caixa_movimento cx on n.id_caixa_movimento=cx.id_caixa_movimento 
-    where cx.dt_abt >= '${req.body.dataIni}' and cx.dt_abt <= '${req.body.dataFim}' and n.situacao in ('E','O') and f.ativo ='S' and f.id <> 5
+    where cx.dt_abt >= '${req.body.dataIni}' and cx.dt_abt <= '${req.body.dataFim}' and n.situacao ${situacoesNfe[req.body.situacaoNfe || 'TUDO']} and f.ativo ='S' and f.id <> 5
     group by cx.dt_abt union all select p.data_pagamento as datareg, 0 as vendas, coalesce(sum(valor_pago),0) as despesas 
     from tb_pagar p 
     where p.data_pagamento >= '${req.body.dataIni}' and p.data_pagamento <= '${req.body.dataFim}' and 

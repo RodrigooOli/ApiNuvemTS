@@ -152,3 +152,10 @@ export function dateFormat(date = Date.now(), tipo: 'ext' | 'date' | 'timestamp'
             break;
     }
 }
+
+
+export function dataEmDias(d: string | number | Date): number {
+    let date = new Date(d);
+    //@ts-ignore
+    return Math.trunc((Date.parse(date) / 1000 / 60 / 60 / 24) + 1)
+}

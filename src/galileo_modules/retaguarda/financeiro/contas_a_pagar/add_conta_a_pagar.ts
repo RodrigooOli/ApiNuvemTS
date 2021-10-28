@@ -97,7 +97,8 @@ export default new class extends RouterFn {
                 id_vinculada,
                 data_pagamento,
                 id_carteira,
-                valor_pago
+                valor_pago,
+                boleto
             ) values (
                 '${conta.vencimento}',
                 ${conta.valor},
@@ -110,7 +111,8 @@ export default new class extends RouterFn {
                 ${id_vinculada},
                 ${conta.paga ? `'${conta.dataPagamento}'` : 'NULL'},
                 ${conta.carteira},
-                ${conta.paga ? conta.valor : 0}
+                ${conta.paga ? conta.valor : 0},
+                '${conta.boleto || ''}'
             ) returning *`)
 
             contasGravada.push(rows[0]);

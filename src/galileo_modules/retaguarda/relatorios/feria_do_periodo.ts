@@ -1,3 +1,4 @@
+import { situacoesNfe } from "../../../common/constants";
 import { db } from "../../../common/ex_sql_relatorio";
 
 const sql = (filtros) => {
@@ -21,7 +22,7 @@ const sql = (filtros) => {
     (
       select count(1) from tb_nfe tn
       inner join tb_caixa_movimento tcm on  tn.id_caixa_movimento = tcm.id_caixa_movimento
-      where tcm.data_abertura >= '${filtros.dataIni}' and tcm.data_abertura <= '${filtros.dataFim} 23:59' and tn.situacao in ('E','O')
+      where tcm.data_abertura >= '${filtros.dataIni}' and tcm.data_abertura <= '${filtros.dataFim} 23:59' and tn.situacao ${situacoesNfe[filtros.situacaoNfe || 'TUDO']}
       and tcm.id_turno = t.id_turno
     ) vendas
     from (    
@@ -41,7 +42,7 @@ const sql = (filtros) => {
       inner join tb_nfe n on n.serie=p.serie and n.numero=p.numero 
       inner join tb_forma_pagamento f on p.forma_pagamento=f.id 
       inner join tb_caixa_movimento cx on  n.id_caixa_movimento = cx.id_caixa_movimento 
-      where cx.data_abertura::date >= '${filtros.dataIni}' and cx.data_abertura::date <= '${filtros.dataFim} 23:59' and n.situacao in ('E','O') and f.ativo ='S'
+      where cx.data_abertura::date >= '${filtros.dataIni}' and cx.data_abertura::date <= '${filtros.dataFim} 23:59' and n.situacao ${situacoesNfe[filtros.situacaoNfe || 'TUDO']} and f.ativo ='S'
       union all
       SELECT 
       cx.id_turno,
@@ -117,7 +118,7 @@ const sql = (filtros) => {
         (	
           select count(1) from tb_nfe tn
           inner join tb_caixa_movimento tcm on  tn.id_caixa_movimento = tcm.id_caixa_movimento
-          where tcm.data_abertura >= '${filtros.dataIni}' and tcm.data_abertura <= '${filtros.dataFim} 23:59' and tn.situacao in ('E','O')
+          where tcm.data_abertura >= '${filtros.dataIni}' and tcm.data_abertura <= '${filtros.dataFim} 23:59' and tn.situacao ${situacoesNfe[filtros.situacaoNfe || 'TUDO']}
           and tcm.id_turno = t.id_turno
         ) vendas
         from (     

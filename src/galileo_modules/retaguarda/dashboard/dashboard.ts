@@ -22,6 +22,7 @@ export default new class extends RouterFn {
             saldoPorDia: [],
             vendasPorFormaPagamento: [],
             faturamentoPorCaixa: [],
+            faturamentoPorHora: [],
         }
 
         if (req.body.lojasId && req.body.lojasId.length > 0) {
@@ -46,6 +47,7 @@ export default new class extends RouterFn {
             const fnSaldoPorDia = (await import('./saldo_por_dia')).default;
             const fnVendasPorFormaPagamento = (await import('./vendas_por_forma_pagamento')).default;
             const fnFaturamentoPorCaixa = (await import('./faturamento_por_caixa')).default;
+            const fnFaturamentoPorHora = (await import('./faturamento_por_hora')).default;
 
             const result = await fnResult(req)
             const contas = await fnContas(req)
@@ -55,14 +57,9 @@ export default new class extends RouterFn {
             const saldoPorDia = await fnSaldoPorDia(req)
             const vendasPorFormaPagamento = await fnVendasPorFormaPagamento(req)
             const faturamentoPorCaixa = await fnFaturamentoPorCaixa(req)
+            const faturamentoPorHora = await fnFaturamentoPorHora(req)
 
-            body.totais = {
-                entradas: result.entradas,
-                saidas: result.saidas,
-                saldo: result.saldo,
-                previsao: result.previsao_final
-            }
-
+            body.totais = result
             body.centroDeCusto = centroDeCusto;
             body.contas = contas.sort((a, b) => Date.parse(a['vencimento']) - Date.parse(b['vencimento']));
             body.ranking = ranking;
@@ -70,6 +67,7 @@ export default new class extends RouterFn {
             body.saldoPorDia = saldoPorDia;
             body.vendasPorFormaPagamento = vendasPorFormaPagamento;
             body.faturamentoPorCaixa = faturamentoPorCaixa;
+            body.faturamentoPorHora = faturamentoPorHora;
         }
 
         res.json({

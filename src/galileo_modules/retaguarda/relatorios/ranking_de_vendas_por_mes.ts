@@ -1,3 +1,4 @@
+import { situacoesNfe } from "../../../common/constants"
 import { db } from "../../../common/ex_sql_relatorio"
 
 export default async (LojasId, filtros) => {
@@ -27,10 +28,6 @@ export default async (LojasId, filtros) => {
 		on tn.serie = tni.serie and tn.numero = tni.numero 
 		inner join tb_caixa_movimento tcm 
 		on tcm.id_caixa_movimento = tn.id_caixa_movimento 
-		inner join tb_nfe_pagamento tnp 
-		on tnp.serie = tn.serie and tnp.numero = tn.numero 
-		inner join tb_forma_pagamento tfp 
-		on tfp.id = tnp.forma_pagamento 
 		inner join tb_produto tp 
 		on tp.id_produto = tni.id_produto
 		left join tb_grupo tg 
@@ -40,9 +37,7 @@ export default async (LojasId, filtros) => {
 		where tcm.data_abertura >= '${filtros.dataIni} 00:00' and tcm.data_abertura <= '${filtros.dataFim} 23:59'
 		and tn.dthr_saida::time >= '${filtros.horaIni || '00:00'}:00'
 		and tn.dthr_saida::time <= '${filtros.horaFim || '23:59'}:59'
-		and tn.situacao in ('E', 'O')
-		and tnp.forma_pagamento <> 5
-		and tfp.ativo = 'S'
+		and tn.situacao ${situacoesNfe[filtros.situacaoNfe || 'TUDO']}
 		${whereGrupo}
 		${whereSubgrupo}
 		group by tni.descricao, tni.und, tni.vl_total, tcm.data_abertura

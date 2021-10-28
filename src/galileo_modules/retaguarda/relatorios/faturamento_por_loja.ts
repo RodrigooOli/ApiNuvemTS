@@ -1,3 +1,4 @@
+import { situacoesNfe } from "../../../common/constants";
 import { db } from "../../../common/ex_sql_relatorio";
 import { pgConnection } from "../../../utils/pg_sql";
 
@@ -16,7 +17,7 @@ export default async (ids, filtros) => {
             inner join tb_nfe_pagamento p on v.serie = p.serie and p.numero = v.numero 
             inner join tb_forma_pagamento f on p.forma_pagamento = f.id 
             inner join tb_caixa_movimento cx on v.id_caixa_movimento=cx.id_caixa_movimento 
-            WHERE cx.data_abertura::date >= '${filtros.dataIni}' AND cx.data_abertura::date <= '${filtros.dataFim}' and v.situacao in ('E','O') and f.ativo ='S' and f.id <> 5
+            WHERE cx.data_abertura::date >= '${filtros.dataIni}' AND cx.data_abertura::date <= '${filtros.dataFim}' and v.situacao ${situacoesNfe[filtros.situacaoNfe || 'TUDO']} and f.ativo ='S' and f.id <> 5
             union all
             select   
             tcr.valor_receb as faturamento

@@ -1,3 +1,4 @@
+import { situacoesNfe } from '../../../common/constants';
 import { db } from '../../../common/ex_sql_relatorio';
 
 export default async (req) => {
@@ -17,7 +18,7 @@ export default async (req) => {
     inner join
         tb_caixa_movimento c on v.id_caixa_movimento = c.id_caixa_movimento 
     where
-        c.data_abertura::date >= '${req.body.dataIni}' and c.data_abertura::date <= '${req.body.dataFim}' and v.situacao in ('E','O') and f.ativo ='S'
+        c.data_abertura::date >= '${req.body.dataIni}' and c.data_abertura::date <= '${req.body.dataFim}' and v.situacao ${situacoesNfe[req.body.situacaoNfe || 'TUDO']} and f.ativo ='S'
     ) aa
     group by descricao, grupo
     order by grupo`).execute(req.body.lojasId);

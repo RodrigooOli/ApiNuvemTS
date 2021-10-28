@@ -1,3 +1,4 @@
+import { situacoesNfe } from "../../../common/constants"
 import { db } from "../../../common/ex_sql_relatorio"
 
 export default async (LojasId, filtros) => {
@@ -10,6 +11,8 @@ export default async (LojasId, filtros) => {
 	const whereGrupo = filtros.grupo === 'TODOS OS GRUPOS' || filtros.subgrupo !== 'TODOS OS SUBGRUPOS' ? '' : `and tg.grupo = '${filtros.grupo}'`
 	const whereSubgrupo = filtros.subgrupo === 'TODOS OS SUBGRUPOS' ? '' : `and ts.subgrupo = '${filtros.subgrupo}'`
 
+	console.log(filtros.situacaoNfe)
+
 	const rows = await db(`select 
 	left(i.descricao,30) as descricao, 
 	sum(i.quantidade) as qntd, 
@@ -20,10 +23,6 @@ export default async (LojasId, filtros) => {
 	on v.serie = i.serie and v.numero = i.numero
 	inner join tb_caixa_movimento c 
 	on v.id_caixa_movimento = c.id_caixa_movimento 
-	inner join tb_nfe_pagamento p 
-	on p.serie = v.serie and p.numero = v.numero 
-	inner join tb_forma_pagamento f 
-	on f.id = p.forma_pagamento
 	inner join tb_produto tp 
 	on tp.id_produto = i.id_produto 
 	left join tb_grupo tg 
@@ -32,10 +31,9 @@ export default async (LojasId, filtros) => {
 	on ts.idsubgrupo = tp.idsubgrupo 
 	where c.data_abertura::date >= '${filtros.dataIni}'
 	and c.data_abertura::date   <= '${filtros.dataFim}'
-	and v.dthr_saida::time >= '${filtros.horaIni || '00:00'}:00'
-	and v.dthr_saida::time <= '${filtros.horaFim || '23:59'}:59'
-	and v.situacao in ('E','O') 
-	and f.ativo = 'S' and f.id <> 5
+	and v.dthr_saida::time >= '${filtros.horaIni}:00'
+	and v.dthr_saida::time <= '${filtros.horaFim}:59'
+	and v.situacao ${situacoesNfe[filtros.situacaoNfe || 'TUDO']}
 	${whereGrupo}
 	${whereSubgrupo}
 	group by i.descricao, i.und`).execute(LojasId)
