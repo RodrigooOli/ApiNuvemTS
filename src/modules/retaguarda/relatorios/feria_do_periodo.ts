@@ -144,7 +144,7 @@ const sql = (filtros) => {
         0 as pagamentos
         from tb_caixa_conferencia cc
         inner join tb_caixa_movimento cx on cc.grupo_conferencia = cx.grupo_conferencia 
-        where cx.data_abertura::date >= '${filtros.dataIni}' and cx.data_abertura::date <= '${filtros.dataFim} 23:59'        
+        where cx.data_abertura::date >= '${filtros.dataIni}' and cx.data_abertura::date <= '${filtros.dataFim} 23:59'
         union all
         SELECT 
         cx.id_turno,
@@ -162,7 +162,30 @@ const sql = (filtros) => {
         FROM TB_DESPESA d 
         inner join tb_caixa_movimento cx on cx.id_caixa_movimento = d.id_caixa 
         WHERE d.DATA_DESPESA::date >= '${filtros.dataIni}' AND d.DATA_DESPESA::date <= '${filtros.dataFim} 23:59'
+        ---------
         union all
+        ---------
+        SELECT 
+        tcm.id_turno,
+        sum(tss.vl_emissao) * -1 as dinheiro,
+        0 as pix,
+        0 as credito,
+        0 as debito,
+        0 as prazo,
+        0 as voucher,
+        0 as troca,
+        0 as outros,
+        0 as recebimento,
+        0 as despesa,
+        0 as pagamentos
+        from tb_caixa_movimento tcm 
+        inner join tb_suprimento_sangria tss 
+        on tss.id_caixa_movimento = tcm.id_caixa_movimento and tss.anotacao = 'Fundo de Caixa'
+        where tcm.DT_ABT >= '${filtros.dataIni}' AND tcm.DT_ABT <= '${filtros.dataFim}'
+        group by tcm.id_turno
+        ---------
+        union all
+        ---------
         select 
         9 as id_turno,
         0 as dinheiro,
@@ -237,11 +260,8 @@ export default async (lojasId, filtros) => {
     })
 
     result.push(totalPeriodo)
+    totalPeriodo.ticket_medio = totalPeriodo.total / totalPeriodo.vendas || 1
   }
-
-  totalPeriodo.ticket_medio = totalPeriodo.total / totalPeriodo.vendas || 1
-
-  // console.log(totalPeriodo)
 
   return result;
 }

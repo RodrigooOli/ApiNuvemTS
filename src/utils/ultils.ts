@@ -1,6 +1,8 @@
 export const arrMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 export const arrMesesMin = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
+type formatDateType = 'ext' | 'date' | 'timestamp' | 'date-br' | 'timestamp-br' | 'miniext' | 'mesano';
+
 export class Copy {
     constructor(obj) {
         Object.keys(obj).forEach(k => this[k] = obj[k]);
@@ -18,72 +20,31 @@ export class Copy {
 }
 
 
-export function parseNumber(val) {
-    return +(parseFloat(val || '0').toFixed(2))
-}
+export const delay = async (ms: number) => new Promise(res => setTimeout(res, ms));
+
+export const aspasSimplesDB = (text: string): string => (text || '').replace(/'/g, "''")
+
+export const parseNumber = (val): number => +(parseFloat(val || '0').toFixed(2))
+
+//@ts-ignore
+export const dataEmDias = (d: string | number | Date): number => Math.trunc((Date.parse(new Date(d)) / 1000 / 60 / 60 / 24) + 1)
 
 
-export const formataDataDB = (date: any, type: 'date' | 'timestamp' = 'timestamp') => {
-    const d = new Date(date).toLocaleString("pt-br")
-    const data = d.split(' ')[0]
-    const time = d.split(' ')[1]
-    if (type === 'date') {
-        return data.split("/").reverse().join("-")
-    } else {
-        return data.split("/").reverse().join("-") + ' ' + time
-    }
-}
-
-
-export function getMes(m, formato = 4) {
-    if (!m) m = new Date(Date.now()).getMonth() + 1;
+export function getMes(d: Date | string | number, formato?: formatDateType) {
+    const date = new Date(d || Date.now())
+    const m = date.getMonth();
 
     return {
         inicio: (() => {
-            const data = new Date(new Date().getFullYear(), m - 1, 1, 0, 0, 0)
-            switch (formato) {
-                case 1:
-                    return data.toLocaleDateString();
-                    break;
-                case 2:
-                    return data.toLocaleString()
-                    break;
-                case 3:
-                    return data.toLocaleDateString("pt-br").split("/").reverse().join("-")
-                    break;
-
-                default:
-                    return data;
-                    break;
-            }
+            const data = new Date(date.getFullYear(), m, 1, 0, 0, 0)
+            return dateFormat(data, formato)
         })(),
 
         fim: (() => {
-            const data = new Date(new Date().getFullYear(), m, 0, 23, 59, 59)
-            switch (formato) {
-                case 1:
-                    return data.toLocaleDateString();
-                    break;
-                case 2:
-                    return data.toLocaleString()
-                    break;
-                case 3:
-                    return data.toLocaleDateString("pt-br").split("/").reverse().join("-")
-                    break;
-
-                default:
-                    return data;
-                    break;
-            }
+            const data = new Date(date.getFullYear(), m + 1, 0, 23, 59, 59)
+            return dateFormat(data, formato)
         })(),
     }
-}
-
-
-export async function delay(ms: number) {
-    await new Promise(resolve => {
-        setTimeout(resolve, ms);
-    })
 }
 
 
@@ -92,20 +53,6 @@ export function parseReal(val) {
         maximumFractionDigits: 2,
         minimumFractionDigits: 2,
     })
-}
-
-
-export function addMesesOld(d: any, qtd: number) {
-    const dia = parseInt(d.split('-')[2])
-    const mes = parseInt(d.split('-')[1])
-    const ultimoDia = getMes(mes + qtd, 3).fim as string
-
-    if (dia > parseInt(ultimoDia.split('-')[2])) {
-        d = `${parseInt(d.split('-')[0])}-${mes + 1 + qtd}-01`
-    }
-
-    const data = new Date(`${d} `)
-    return data
 }
 
 export function addMeses(d: string | Date, qtd: number) {
@@ -122,16 +69,13 @@ export function addMeses(d: string | Date, qtd: number) {
     const ano = qtd === 12 ? 0 : Math.floor(qtd / 12);
     const mes = Math.floor(qtd - (ano * 12));
 
-    const ultimo = (getMes(mes, 0).fim as Date).getDate()
+    const ultimo = (getMes(`${obj.ano}-${mes}-01`).fim as Date).getDate()
 
     return new Date(`${obj.ano + ano}-${mes}-${obj.dia > ultimo ? ultimo : obj.dia} `);
 }
 
-export function aspasSimplesDB(text: string) {
-    return (text || '').replace(/'/g, "''")
-}
 
-export function dateFormat(date = Date.now(), tipo: 'ext' | 'date' | 'timestamp' | 'miniext' = 'ext') {
+export function dateFormat(date = Date.now() as Date | string | number, tipo?: formatDateType) {
     const data = new Date(date)
 
     switch (tipo) {
@@ -147,15 +91,34 @@ export function dateFormat(date = Date.now(), tipo: 'ext' | 'date' | 'timestamp'
         case 'timestamp':
             return `${data.toLocaleString().split(' ')[0].split('/').reverse().join('-')} ${data.toLocaleString().split(' ').pop()}`
             break;
+        case 'date-br':
+            return data.toLocaleDateString('pr-br')
+            break;
+        case 'timestamp-br':
+            return data.toLocaleString('pt-br')
+            break;
+        case 'mesano':
+            return `${arrMeses[new Date(data).getMonth()]} ${data.getFullYear()}`
+            break;
 
         default:
+            return data
             break;
     }
 }
 
 
-export function dataEmDias(d: string | number | Date): number {
-    let date = new Date(d);
-    //@ts-ignore
-    return Math.trunc((Date.parse(date) / 1000 / 60 / 60 / 24) + 1)
+export function tiraAcento(palavra: string): string {
+    const comAcento = 'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŔÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŕ'
+    const semAcento = 'AAAAAAACEEEEIIIIDNOOOOOOUUUUYRsBaaaaaaaceeeeiiiionoooooouuuuybyr'
+
+    palavra.split('').forEach(letra => {
+        const ind = comAcento.indexOf(letra)
+
+        if (ind !== -1) {
+            palavra = palavra.replace(letra, semAcento[ind])
+        }
+    })
+
+    return palavra
 }

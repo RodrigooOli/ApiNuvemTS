@@ -7,8 +7,8 @@ const router = Router()
 
 router.use(cors({ origin: '*', methods: "GET, POST" }))
 
-const createRoutes = async () => new Promise(async res => {
-    const lsDir = fs.readdirSync(__dirname + '/../galileo_modules/')
+const createRoutes = async (): Promise<Router> => new Promise(async res => {
+    const lsDir = fs.readdirSync(__dirname + '/../modules/')
 
     async function criarRotas(list: string[], dir: string) {
         for (let i = 0; i < list.length; i++) {
@@ -35,15 +35,9 @@ const createRoutes = async () => new Promise(async res => {
         }
     }
 
-    await criarRotas(lsDir, __dirname + '/../galileo_modules/')
+    await criarRotas(lsDir, __dirname + '/../modules/')
 
-    res(void 0);
+    res(router);
 })
 
-async function constructRoutes() {
-    await createRoutes();
-
-    return router
-}
-
-export default constructRoutes;
+export default createRoutes;

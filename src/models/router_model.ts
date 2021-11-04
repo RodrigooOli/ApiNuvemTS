@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { gravaErroSistema } from "../galileo_modules/base/controle/erro_no_sistema/funcao_grava_erro";
+import { gravaErroSistema } from "../modules/base/controle/erro_no_sistema/funcao_grava_erro";
 
 export class RouterFn {
     constructor(public route: string, public method: 'GET' | 'POST') { }

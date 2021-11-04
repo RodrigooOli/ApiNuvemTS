@@ -1,7 +1,7 @@
 import fs from "fs";
 import { pgConnection } from "../../../../utils/pg_sql"
 import { errorObj } from './interfaces'
-import { formataDataDB } from '../../../../utils/ultils'
+import { dateFormat } from '../../../../utils/ultils'
 
 const pgSql = pgConnection();
 
@@ -18,7 +18,7 @@ export const gravaErroSistema = async (obj: errorObj) => {
             '${obj.origem}',
             '${obj.origem_d || ''}',
             '${obj.msg}',
-            '${formataDataDB(obj.dataErr)}'
+            '${dateFormat(obj.dataErr, 'timestamp')}'
         )`);
     } catch (e) {
         const exists = fs.existsSync('./erros_sistema.txt')
