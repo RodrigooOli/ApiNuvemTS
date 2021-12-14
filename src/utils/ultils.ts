@@ -26,6 +26,17 @@ export const aspasSimplesDB = (text: string): string => (text || '').replace(/'/
 
 export const parseNumber = (val): number => +(parseFloat(val || '0').toFixed(2))
 
+export const formatToSearch = (val: string): string => tiraAcento(val).toUpperCase()
+
+export const numbers = (val: any): number => +`${val}`.replace(',', '.').replace(/[^0-9 .]/g, '') || 0
+
+
+//@ts-ignore
+String.prototype.searchDB = function () {
+    return aspasSimplesDB(this.toUpperCase()).replace(/ /g, '')
+};
+
+
 //@ts-ignore
 export const dataEmDias = (d: string | number | Date): number => Math.trunc((Date.parse(new Date(d)) / 1000 / 60 / 60 / 24) + 1)
 
@@ -121,4 +132,47 @@ export function tiraAcento(palavra: string): string {
     })
 
     return palavra
+}
+
+
+export function criaEan13(ean: number | string): string {
+    ean = ean.toString().replace(/\D/g, '')
+    ean = ean.substr(0, 12).padStart(12, '789000000000')
+
+    let sum = ean.split('').reduce((acc, n, i) => {
+        acc += +n * (i % 2 === 0 ? 1 : 3)
+        return acc
+    }, 0)
+
+    sum = (Math.floor(sum / 10) + 1) * 10 - sum
+
+    // console.log(sum)
+
+    return sum === 10 ? criaEan13(+ean - 1) : `${ean}${sum}`
+}
+
+
+export function validEan13(numero): boolean {
+    numero = {
+        value: `${numero}`
+    }
+
+    let factor = 3;
+    let sum = 0;
+    let numlen = numero.value.length;
+
+    /// EAN-13
+    if (numlen == 13) {
+        for (let index = numero.value.length; index > 0; --index) {
+            if (index != 13) {
+                sum = sum + numero.value.substring(index - 1, index) * factor;
+                factor = 4 - factor;
+            }
+        }
+
+        let cc = ((1000 - sum) % 10);
+        let ca = numero.value.substring(12);
+
+        return cc == ca;
+    } else return false;
 }

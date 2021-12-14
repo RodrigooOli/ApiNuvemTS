@@ -9,7 +9,7 @@ const app = express()
 
 app.use(express.json());
 
-(async () => {
+async function main() {
     const rotas = await router();
 
     app.use(rotas)
@@ -28,4 +28,6 @@ app.use(express.json());
             console.log(`Api rodando na porta ${port}`);
         })
     }
-})()
+}
+
+main()

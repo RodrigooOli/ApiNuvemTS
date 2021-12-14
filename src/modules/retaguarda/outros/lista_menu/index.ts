@@ -1,9 +1,15 @@
 import { Request, Response } from "express";
 import { RouterFn } from "../../../../models/router_model";
 import { pgConnection } from "../../../../utils/pg_sql";
-import { IMenuItem, IMenuList } from "./interfaces";
 
 const pgSql = pgConnection();
+
+const menuFranquia = [
+    'Relatórios',
+    'Faturamento por dia',
+    'Faturamento por loja',
+    'Féria do período',
+]
 
 export default new class extends RouterFn {
     constructor() { super('/retaguarda/get_lista_menu', 'POST') }
@@ -33,7 +39,11 @@ export default new class extends RouterFn {
 
         const permissao = permissoes().filter((p: number) => p !== 28 || rOperador[0].nivel === 4);
 
-        const rMenus = await pgSql('select * from tb_menu')
+        var rMenus = await pgSql('select * from tb_menu')
+
+        rMenus = rMenus.filter(m => {
+            return !req.body.verFranquia || !!m.ver_franquia
+        })
 
         if (!!rOperador[0].id_franquia) {
             rMenus.push({
@@ -46,32 +56,33 @@ export default new class extends RouterFn {
             })
         }
 
-        const menus: IMenuList = rMenus.filter(menu => !menu.id_menu_pai).map(menu => ({
-            id: menu.id,
-            title: menu.title,
-            route: menu.rota,
-            icon: menu.icon,
-            subMenus: rMenus.filter(submenu => submenu.id_menu_pai === menu.id).map(m => ({
-                id: m.id,
-                title: m.title,
-                route: m.rota,
-                icon: m.icon,
-                subMenus: rMenus.filter(submenu => submenu.id_menu_pai === m.id).map(m2 => ({
-                    id: m2.id,
-                    title: m2.title,
-                    route: m2.rota,
-                    icon: m2.icon,
+        const listaMenu = [];
+
+        function montaMenu(pArr, lista) {
+            if (lista.length === 0) return;
+
+            pArr.push(...lista.map((menu) => {
+                const obj = {
+                    id: menu.id,
+                    title: menu.title,
+                    route: menu.rota,
+                    icon: menu.icon,
                     subMenus: [],
-                    disable: !m2.ativo || !(rOperador[0].nivel === 4 || permissao.includes(m2.id))
-                })).sort((a: any, b: any) => a.title > b.title ? 1 : -1),
-                disable: !m.ativo || !(rOperador[0].nivel === 4 || permissao.includes(m.id))
-            })).sort((a: any, b: any) => a.title > b.title ? 1 : -1),
-            disable: !menu.ativo || !(rOperador[0].nivel === 4 || permissao.includes(menu.id))
-        } as IMenuItem)).sort((a: any, b: any) => a.title > b.title ? 1 : -1)
+                    disable: !menu.ativo || !(rOperador[0].nivel === 4 || permissao.includes(menu.id)),
+                    hidden: req.body.verFranquia && !menuFranquia.includes(menu.title)
+                }
+
+                montaMenu(obj.subMenus, rMenus.filter(m => m.id_menu_pai === menu.id));
+
+                return obj
+            }).sort((a, b) => a.title > b.title ? 1 : -1))
+        }
+
+        montaMenu(listaMenu, rMenus.filter(menu => !menu.id_menu_pai))
 
         res.json({
             ok: true,
-            body: menus
+            body: listaMenu
         })
     }
 }

@@ -14,5 +14,22 @@ export default async (req) => {
     group by i.descricao
     order by vl_total desc limit 10`).execute(req.body.lojasId)
 
-    return rows;
+    const ranking = rows.reduce((acc, r) => {
+        const ind = acc.findIndex(row => row.descricao === r.descricao);
+
+        if (ind !== -1) {
+            acc[ind].vl_total += +r.vl_total
+            acc[ind].qntd += +r.qntd
+        } else {
+            acc.push({
+                ...r,
+                vl_total: +r.vl_total,
+                qntd: +r.qntd,
+            })
+        }
+
+        return acc;
+    }, [])
+
+    return ranking;
 }

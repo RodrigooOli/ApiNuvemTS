@@ -23,6 +23,7 @@ export default new class extends RouterFn {
             vendasPorFormaPagamento: [],
             faturamentoPorCaixa: [],
             faturamentoPorHora: [],
+            faturamentoPorLoja: {},
         }
 
         if (req.body.lojasId && req.body.lojasId.length > 0) {
@@ -48,6 +49,7 @@ export default new class extends RouterFn {
             const fnVendasPorFormaPagamento = (await import('./vendas_por_forma_pagamento')).default;
             const fnFaturamentoPorCaixa = (await import('./faturamento_por_caixa')).default;
             const fnFaturamentoPorHora = (await import('./faturamento_por_hora')).default;
+            const fnFaturamentoPorLoja = (await import('./faturamento_por_loja')).default;
 
             const result = await fnResult(req)
             const contas = await fnContas(req)
@@ -58,6 +60,7 @@ export default new class extends RouterFn {
             const vendasPorFormaPagamento = await fnVendasPorFormaPagamento(req)
             const faturamentoPorCaixa = await fnFaturamentoPorCaixa(req)
             const faturamentoPorHora = await fnFaturamentoPorHora(req)
+            const faturamentoPorLoja = await fnFaturamentoPorLoja(req)
 
             body.totais = result
             body.centroDeCusto = centroDeCusto;
@@ -68,6 +71,7 @@ export default new class extends RouterFn {
             body.vendasPorFormaPagamento = vendasPorFormaPagamento;
             body.faturamentoPorCaixa = faturamentoPorCaixa;
             body.faturamentoPorHora = faturamentoPorHora;
+            body.faturamentoPorLoja = faturamentoPorLoja;
         }
 
         res.json({

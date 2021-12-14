@@ -13,7 +13,7 @@ export class RouterFn {
             console.log(e)
             gravaErroSistema({
                 dataErr: new Date(Date.now()),
-                msg: `${e.toString()}, body: ${JSON.stringify(req.body)}`,
+                msg: `${e.toString()}}`,
                 ident: req.headers.host,
                 origem: 'API NUVEM',
                 origem_d: req.url,

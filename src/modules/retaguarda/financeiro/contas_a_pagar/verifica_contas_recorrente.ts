@@ -72,6 +72,4 @@ export async function verificaContasRecorrente(req: Request) {
             where id = ${conta.id}`)
         }
     }
-
-    // console.log(rows)
 }

@@ -46,5 +46,22 @@ export default async (LojasId, filtros) => {
 	group by s1.descricao, s1.und, s1.mes_ano
 	order by mes_ano::date, ${sort[filtros.ordem] || 'vl_total desc'}`).execute(LojasId)
 
-	return rows;
+	const ranking = rows.reduce((acc, r) => {
+		const ind = acc.findIndex(row => row.descricao === r.descricao && row.mes_ano === r.mes_ano);
+
+		if (ind !== -1) {
+			acc[ind].vl_total += +r.vl_total
+			acc[ind].qntd += +r.qntd
+		} else {
+			acc.push({
+				...r,
+				vl_total: +r.vl_total,
+				qntd: +r.qntd,
+			})
+		}
+
+		return acc;
+	}, [])
+
+	return ranking;
 }

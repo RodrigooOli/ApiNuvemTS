@@ -19,9 +19,9 @@ export default async (req) => {
 
 
     const result = rows.reduce((acc, f) => {
-        if (!Object.keys(acc).includes(f.hora)) acc[f.hora] = 0;
+        if (!Object.keys(acc).includes(f.hora.toString())) acc[f.hora.toString()] = 0;
 
-        acc[f.hora] += +f.vendas
+        acc[f.hora.toString()] += +f.vendas
         return acc;
     }, {})
 

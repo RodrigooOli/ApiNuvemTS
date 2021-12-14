@@ -1,0 +1,121 @@
+
+
+
+[09/11/2021 18:21:16] - Error: Connection terminated unexpectedly
+        origem: API NUVEM
+        origem_d: /retaguarda/get_lista_menu
+        msg: Error: Connection terminated unexpectedly, body: {"id":48},
+        data_erro: Tue Nov 09 2021 18:21:16 GMT-0300 (Horário Padrão de Brasília)
+
+
+[09/11/2021 18:21:17] - Error: Connection terminated unexpectedly
+        origem: API NUVEM
+        origem_d: /retaguarda/load_subgrupo_fin
+        msg: Error: Connection terminated unexpectedly, body: {"idLoja":"78614738287683"},
+        data_erro: Tue Nov 09 2021 18:21:17 GMT-0300 (Horário Padrão de Brasília)
+
+
+[09/11/2021 18:21:17] - Error: Connection terminated unexpectedly
+        origem: API NUVEM
+        origem_d: /retaguarda/load_subgrupo_fin
+        msg: Error: Connection terminated unexpectedly, body: {"idLoja":"78614738287683"},
+        data_erro: Tue Nov 09 2021 18:21:17 GMT-0300 (Horário Padrão de Brasília)
+
+
+[09/11/2021 18:21:17] - Error: Connection terminated unexpectedly
+        origem: API NUVEM
+        origem_d: /retaguarda/load_grupo_fin
+        msg: Error: Connection terminated unexpectedly, body: {"idLoja":"78614738287683","soAtivos":true},
+        data_erro: Tue Nov 09 2021 18:21:17 GMT-0300 (Horário Padrão de Brasília)
+
+
+[11/11/2021 16:10:15] - error: syntax error at or near "subMenus"
+        origem: API NUVEM
+        origem_d: /retaguarda/get_lista_menu
+        msg: TypeError: Cannot read property 'subMenus' of undefined, body: {"id":48,"idFranquia":4,"nivel":4,"cartao":"0","ativo":true,"codAtd":0,"vDashboard":true,"permissao":[],"verFranquia":true},
+        data_erro: Thu Nov 11 2021 16:10:15 GMT-0300 (Horário Padrão de Brasília)
+
+
+[11/11/2021 16:10:37] - error: syntax error at or near "subMenus"
+        origem: API NUVEM
+        origem_d: /retaguarda/get_lista_menu
+        msg: TypeError: Cannot read property 'subMenus' of undefined, body: {"id":48,"idFranquia":4,"nivel":4,"cartao":"0","ativo":true,"codAtd":0,"vDashboard":true,"permissao":[],"verFranquia":true},
+        data_erro: Thu Nov 11 2021 16:10:37 GMT-0300 (Horário Padrão de Brasília)
+
+
+[11/11/2021 16:11:02] - error: syntax error at or near "subMenus"
+        origem: API NUVEM
+        origem_d: /retaguarda/get_lista_menu
+        msg: TypeError: Cannot read property 'subMenus' of undefined, body: {"id":48,"idFranquia":4,"nivel":4,"cartao":"0","ativo":true,"codAtd":0,"vDashboard":true,"permissao":[],"verFranquia":true},
+        data_erro: Thu Nov 11 2021 16:11:02 GMT-0300 (Horário Padrão de Brasília)
+
+
+[17/11/2021 15:16:45] - error: syntax error at or near "nome"
+        origem: API NUVEM
+        origem_d: /retaguarda/dashboard
+        msg: TypeError: Cannot read property 'nome' of undefined, body: {"lojasId":["62266475786305","68641884326216","36016979432459","15920308646237","22772423991668","20559347538983","63100277393875","60609483817132","47974965251834","23044101297012","13213810873889","91989799702208","34966047356361","40244908904907","36577311847077","60793642455434","79755126919848","83646692236908","06136288784721","65970777921585","14271094573995","39209369887433","89283781657728","07712768807221","59094848997272","22995171780283"],"dataIni":"2021-11-01","dataFim":"2021-11-30","situacaoNfe":"TUDO"},
+        data_erro: Wed Nov 17 2021 15:16:45 GMT-0300 (Horário Padrão de Brasília)
+
+
+[17/11/2021 15:17:12] - error: syntax error at or near "nome"
+        origem: API NUVEM
+        origem_d: /retaguarda/dashboard
+        msg: TypeError: Cannot read property 'nome' of undefined, body: {"lojasId":["62266475786305","68641884326216","36016979432459","15920308646237","22772423991668","20559347538983","63100277393875","60609483817132","47974965251834","23044101297012","13213810873889","91989799702208","34966047356361","40244908904907","36577311847077","60793642455434","79755126919848","83646692236908","06136288784721","65970777921585","14271094573995","39209369887433","89283781657728","07712768807221","59094848997272","22995171780283"],"dataIni":"2021-11-01","dataFim":"2021-11-30","situacaoNfe":"TUDO"},
+        data_erro: Wed Nov 17 2021 15:17:12 GMT-0300 (Horário Padrão de Brasília)
+
+
+[17/11/2021 15:17:37] - error: syntax error at or near "nome"
+        origem: API NUVEM
+        origem_d: /retaguarda/dashboard
+        msg: TypeError: Cannot read property 'nome' of undefined, body: {"lojasId":["62266475786305","68641884326216","36016979432459","15920308646237","22772423991668","20559347538983","63100277393875","60609483817132","47974965251834","23044101297012","13213810873889","91989799702208","34966047356361","40244908904907","36577311847077","60793642455434","79755126919848","83646692236908","06136288784721","65970777921585","14271094573995","39209369887433","89283781657728","07712768807221","59094848997272","22995171780283"],"dataIni":"2021-11-01","dataFim":"2021-11-30","situacaoNfe":"TUDO"},
+        data_erro: Wed Nov 17 2021 15:17:37 GMT-0300 (Horário Padrão de Brasília)
+
+
+[17/11/2021 15:19:46] - error: syntax error at or near "nome"
+        origem: API NUVEM
+        origem_d: /retaguarda/dashboard
+        msg: TypeError: Cannot read property 'nome' of undefined, body: {"lojasId":["62266475786305","68641884326216","36016979432459","15920308646237","22772423991668","20559347538983","63100277393875","60609483817132","47974965251834","23044101297012","13213810873889","91989799702208","34966047356361","40244908904907","36577311847077","60793642455434","79755126919848","83646692236908","06136288784721","65970777921585","14271094573995","39209369887433","89283781657728","07712768807221","59094848997272","22995171780283"],"dataIni":"2021-11-01","dataFim":"2021-11-30","situacaoNfe":"TUDO"},
+        data_erro: Wed Nov 17 2021 15:19:46 GMT-0300 (Horário Padrão de Brasília)
+
+
+[23/11/2021 16:33:23] - error: syntax error at or near "findIndex"
+        origem: API NUVEM
+        origem_d: /retaguarda/relatorios/faturamento_por_dia
+        msg: TypeError: Cannot read property 'findIndex' of undefined, body: {"lojasId":["62266475786305","68641884326216","36016979432459","15920308646237","22772423991668","47974965251834","20559347538983","63100277393875","60609483817132","23044101297012","13213810873889","91989799702208","34966047356361","40244908904907","36577311847077","60793642455434","79755126919848","83646692236908","06136288784721","65970777921585","14271094573995","39209369887433","89283781657728","59094848997272","22995171780283","07712768807221"],"filtros":{"dataIni":"2021-11-01","dataFim":"2021-11-30","situacaoNfe":"TUDO"}},
+        data_erro: Tue Nov 23 2021 16:33:22 GMT-0300 (Horário Padrão de Brasília)
+
+
+[01/12/2021 19:58:07] - error: syntax error at or near "call"
+        origem: API NUVEM
+        origem_d: /retaguarda/add_produto
+        msg: TypeError: Cannot read property 'call' of undefined},
+        data_erro: Wed Dec 01 2021 19:58:07 GMT-0300 (Horário Padrão de Brasília)
+
+
+[03/12/2021 22:22:45] - error: column "vl_atacado" does not exist
+        origem: API NUVEM
+        origem_d: /retaguarda/edit_produto
+        msg: error: syntax error at or near "',
+            vl_atacado = 0,
+            qtde_atacado = 0,
+            idgrupo = 897,
+            idsubgrupo = 929,
+            ncm = '"},
+        data_erro: Fri Dec 03 2021 22:22:44 GMT-0300 (Horário Padrão de Brasília)
+
+
+[06/12/2021 17:15:20] - error: syntax error at or near "length"
+        origem: API NUVEM
+        origem_d: /retaguarda/load/entregadores
+        msg: TypeError: Cannot read property 'length' of undefined},
+        data_erro: Mon Dec 06 2021 17:15:20 GMT-0300 (Horário Padrão de Brasília)
+
+
+[06/12/2021 21:58:47] - error: unterminated quoted identifier at or near ""}',
+            '2021-12-06 21:58:46'
+        )"
+        origem: API NUVEM
+        origem_d: /retaguarda/login
+        msg: error: unterminated quoted string at or near "'
+            "},
+        data_erro: Mon Dec 06 2021 21:58:46 GMT-0300 (Horário Padrão de Brasília)

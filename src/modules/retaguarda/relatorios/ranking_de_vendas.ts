@@ -11,8 +11,6 @@ export default async (LojasId, filtros) => {
 	const whereGrupo = filtros.grupo === 'TODOS OS GRUPOS' || filtros.subgrupo !== 'TODOS OS SUBGRUPOS' ? '' : `and tg.grupo = '${filtros.grupo}'`
 	const whereSubgrupo = filtros.subgrupo === 'TODOS OS SUBGRUPOS' ? '' : `and ts.subgrupo = '${filtros.subgrupo}'`
 
-	console.log(filtros.situacaoNfe)
-
 	const rows = await db(`select 
 	left(i.descricao,30) as descricao, 
 	sum(i.quantidade) as qntd, 
@@ -38,5 +36,22 @@ export default async (LojasId, filtros) => {
 	${whereSubgrupo}
 	group by i.descricao, i.und`).execute(LojasId)
 
-	return rows.sort(sort[filtros.ordem] || (() => 1))
+	const ranking = rows.reduce((acc, r) => {
+		const ind = acc.findIndex(row => row.descricao === r.descricao);
+
+		if (ind !== -1) {
+			acc[ind].vl_total += +r.vl_total
+			acc[ind].qntd += +r.qntd
+		} else {
+			acc.push({
+				...r,
+				vl_total: +r.vl_total,
+				qntd: +r.qntd,
+			})
+		}
+
+		return acc;
+	}, [])
+
+	return ranking.sort(sort[filtros.ordem] || (() => 1));
 }

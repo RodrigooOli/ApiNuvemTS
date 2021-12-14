@@ -10,4 +10,5 @@ export interface IUser {
     v_dashboard: boolean
     permissao: number[]
     representante: number
+    verFranquia: boolean
 }

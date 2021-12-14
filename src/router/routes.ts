@@ -9,6 +9,7 @@ router.use(cors({ origin: '*', methods: "GET, POST" }))
 
 const createRoutes = async (): Promise<Router> => new Promise(async res => {
     const lsDir = fs.readdirSync(__dirname + '/../modules/')
+    const rotas = []
 
     async function criarRotas(list: string[], dir: string) {
         for (let i = 0; i < list.length; i++) {
@@ -22,6 +23,11 @@ const createRoutes = async (): Promise<Router> => new Promise(async res => {
                 const func = await import(dir + `/${arquivo}`);
 
                 if (func.default instanceof RouterFn) {
+                    if (rotas.includes(`${func.default?.method} ${func.default?.route}`))
+                        throw new Error(`${func.default?.method} ${func.default?.route} JÁ EXISTE!`);
+
+                    rotas.push(`${func.default?.method} ${func.default?.route}`)
+
                     switch (func.default?.method) {
                         case 'GET':
                             router.get(`${func.default?.route}`, func.default?.execute)

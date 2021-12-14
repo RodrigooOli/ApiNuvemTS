@@ -145,6 +145,7 @@ const sql = (filtros) => {
         from tb_caixa_conferencia cc
         inner join tb_caixa_movimento cx on cc.grupo_conferencia = cx.grupo_conferencia 
         where cx.data_abertura::date >= '${filtros.dataIni}' and cx.data_abertura::date <= '${filtros.dataFim} 23:59'
+        and not cx.valor_quebra is null
         union all
         SELECT 
         cx.id_turno,
@@ -262,6 +263,8 @@ export default async (lojasId, filtros) => {
     result.push(totalPeriodo)
     totalPeriodo.ticket_medio = totalPeriodo.total / totalPeriodo.vendas || 1
   }
+
+  console.log(result)
 
   return result;
 }

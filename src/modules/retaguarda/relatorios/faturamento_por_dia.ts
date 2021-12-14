@@ -1,8 +1,9 @@
 import { situacoesNfe } from "../../../common/constants";
 import { db } from "../../../common/ex_sql_relatorio";
+import { dateFormat } from "../../../utils/ultils";
 
-export default async (LojasId, filtros) => {
-  return await db(`
+export default async (lojasId, filtros) => {
+  const rows = await db(`
   select 
   datareg,
   sum(dinheiro) as DINHEIRO,
@@ -92,5 +93,62 @@ export default async (LojasId, filtros) => {
   from tb_convenio_receb tcr 
   WHERE tcr.data_receb::date >= '${filtros.dataIni}' AND tcr.data_receb::date <= '${filtros.dataFim}'
   ) t
-  group by datareg`).execute(LojasId);
+  group by datareg`).execute(lojasId);
+
+  const gerarGrafico = (await import('../dashboard/faturamento_por_dia')).default
+
+  const dadosGrafico = await gerarGrafico({
+    body: {
+      lojasId: lojasId,
+      ...filtros
+    }
+  })
+
+  const dadosRelatorio = rows.reduce((acc, row) => {
+    const ind = acc.findIndex(r => r.datareg === dateFormat(row.datareg, 'date'))
+
+    if (ind === -1) {
+      acc.push({
+        datareg: dateFormat(row.datareg, 'date'),
+        dinheiro: +row.dinheiro,
+        pix: +row.pix,
+        credito: +row.credito,
+        debito: +row.debito,
+        troca: +row.troca,
+        outros: +row.outros,
+        voucher: +row.voucher,
+        recebimento_convenio: +row.recebimento_convenio,
+        totalsemprazo: +row.totalsemprazo,
+        prazo: +row.prazo,
+        totalcomprazo: +row.totalcomprazo,
+        pagamentos: +row.pagamentos,
+        liquidosemprazo: +row.liquidosemprazo,
+        qtdvendas: +row.qtdvendas,
+        tkmedio: +row.tkmedio
+      })
+    } else {
+      acc[ind].dinheiro += +row.dinheiro
+      acc[ind].pix += +row.pix
+      acc[ind].credito += +row.credito
+      acc[ind].debito += +row.debito
+      acc[ind].troca += +row.troca
+      acc[ind].outros += +row.outros
+      acc[ind].voucher += +row.voucher
+      acc[ind].recebimento_convenio += +row.recebimento_convenio
+      acc[ind].totalsemprazo += +row.totalsemprazo
+      acc[ind].prazo += +row.prazo
+      acc[ind].totalcomprazo += +row.totalcomprazo
+      acc[ind].pagamentos += +row.pagamentos
+      acc[ind].liquidosemprazo += +row.liquidosemprazo
+      acc[ind].qtdvendas += +row.qtdvendas
+      acc[ind].tkmedio += +row.tkmedio
+    }
+
+    return acc;
+  }, [])
+
+  return {
+    relatorio: dadosRelatorio,
+    grafico: dadosGrafico
+  }
 }
